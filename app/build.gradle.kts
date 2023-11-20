@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "coded.alchemy.dronedemo"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "coded.alchemy.dronedemo"
