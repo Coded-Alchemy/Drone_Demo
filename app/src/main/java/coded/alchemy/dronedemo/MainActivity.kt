@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import coded.alchemy.dronedemo.ui.theme.DroneDemoTheme
+import io.mavsdk.MavsdkEventQueue
+import io.mavsdk.mavsdkserver.MavsdkServer
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +27,16 @@ class MainActivity : ComponentActivity() {
                     Greeting("Android")
                 }
             }
+        }
+
+        // Create an instance of MavsdkServer
+        val server = MavsdkServer()
+        val SYSTEM_ADDRESS = "192.168.0.24"
+        val MAVSDK_SERVER_PORT = 14540
+
+        // Use MavsdkEventQueue.executor() to get an executor and execute the server run operation
+        MavsdkEventQueue.executor().execute {
+            server.run(SYSTEM_ADDRESS, MAVSDK_SERVER_PORT)
         }
     }
 }
