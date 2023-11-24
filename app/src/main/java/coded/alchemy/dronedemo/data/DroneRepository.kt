@@ -2,7 +2,6 @@ package coded.alchemy.dronedemo.data
 
 import io.mavsdk.System
 
-
 class DroneRepository {
 
     lateinit var drone: System

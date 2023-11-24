@@ -1,4 +1,4 @@
-package coded.alchemy.dronedemo.ui.screen
+package coded.alchemy.dronedemo.ui.connectionscreen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -14,15 +14,13 @@ import kotlinx.coroutines.launch
 class ScreenViewModel(private val droneRepository: DroneRepository, private val serverRepository: ServerRepository) : ViewModel() {
 
     private val TAG = this.javaClass.simpleName
-//    private var drone = droneRepository.drone
-    private val server = serverRepository.mavServer()
     private val disposables = CompositeDisposable()
 
     fun connect() {
         Log.d(TAG, "connect: ")
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val port = server.run()
+                val port = serverRepository.mavServer().run()
                 droneRepository.drone = System(serverRepository.host, port)
 
                 disposables.add(
@@ -44,8 +42,8 @@ class ScreenViewModel(private val droneRepository: DroneRepository, private val 
 //                            LatLng(position.latitudeDeg, position.longitudeDeg)
 //                        viewModel.currentPositionLiveData.postValue(latLng)
                         })
-            } catch (e: Exception) {
-                TODO("Not yet implemented")
+            } catch (exception: Exception) {
+                Log.e(TAG, exception.toString() )
             }
         }
     }
