@@ -1,4 +1,4 @@
-package coded.alchemy.dronedemo.ui.connectionscreen
+package coded.alchemy.dronedemo.ui.connection
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

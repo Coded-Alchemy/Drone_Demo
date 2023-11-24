@@ -6,7 +6,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import coded.alchemy.dronedemo.di.appModule
-import coded.alchemy.dronedemo.ui.connectionscreen.ConnectionScreen
+import coded.alchemy.dronedemo.ui.connection.ConnectionScreen
 import org.koin.compose.KoinApplication
 
 @Composable
