@@ -9,30 +9,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun DemoScreen(onConnect: () -> Unit, onArm: () -> Unit) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Column {
-            ConnectButton(onConnect)
-            ArmButton(onArm)
-        }
+fun DemoScreen(viewModel: ScreenViewModel = koinViewModel()) {
+    Column {
+        ConnectButton(viewModel)
+        ArmButton(viewModel)
     }
 }
 
 @Composable
-fun ConnectButton(onClick: () -> Unit) {
-    ElevatedButton(onClick = { onClick() }) {
+fun ConnectButton(viewModel: ScreenViewModel) {
+    ElevatedButton(onClick = { viewModel.connect() }) {
         Text("Start Server")
     }
 }
 
 @Composable
-fun ArmButton(onClick: () -> Unit) {
-    ElevatedButton(onClick = { onClick() }) {
+fun ArmButton(viewModel: ScreenViewModel) {
+    ElevatedButton(onClick = { /*onClick()*/ }) {
         Text("Arm Drone")
     }
 }
@@ -48,5 +45,4 @@ fun DemoScreenPreview() {
 //            EButton()
         }
     }
-
 }
