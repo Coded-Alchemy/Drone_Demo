@@ -21,51 +21,69 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
     private fun getTelemetryData() {
         Log.d(TAG, "getTelemetryData: ")
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                disposables.add(
-                    droneRepository.drone.telemetry.flightMode.distinctUntilChanged()
-                        .subscribe { flightMode: Telemetry.FlightMode ->
+            disposables.add(
+                droneRepository.drone.telemetry.flightMode.distinctUntilChanged()
+                    .subscribe(
+                        { flightMode: Telemetry.FlightMode ->
                             Log.d(TAG, "flight mode: $flightMode")
-                        }
-                )
-                disposables.add(
-                    droneRepository.drone.telemetry.armed.distinctUntilChanged()
-                        .subscribe { armed: Boolean ->
-                            Log.d(TAG, "armed: $armed")
-                        }
-                )
-                disposables.add(
-                    droneRepository.drone.telemetry.position
-                        .subscribe { position: Telemetry.Position ->
-    //                        val latLng =
-    //                            LatLng(position.latitudeDeg, position.longitudeDeg)
-    //                        viewModel.currentPositionLiveData.postValue(latLng)
+                        },
+                        { error ->
+                            Log.e(TAG, "Error in flight mode telemetry subscription", error)
                         })
-            } catch (e: Exception) {
-                Log.e(TAG, "getTelemetryData: $e")
-            }
+            )
+
+            disposables.add(
+                droneRepository.drone.telemetry.armed.distinctUntilChanged()
+                    .subscribe(
+                        { armed: Boolean ->
+                            Log.d(TAG, "armed: $armed")
+                        },
+                        { error ->
+                            Log.e(TAG, "Error in armed telemetry subscription", error)
+                        }
+                    )
+            )
+
+            disposables.add(
+                droneRepository.drone.telemetry.position
+                    .subscribe(
+                        { position: Telemetry.Position ->
+                            //                        val latLng =
+                            //                            LatLng(position.latitudeDeg, position.longitudeDeg)
+                            //                        viewModel.currentPositionLiveData.postValue(latLng)
+                        },
+                        { error ->
+                            Log.e(TAG, "Error in position telemetry subscription", error)
+                        })
+                    )
         }
     }
 
     fun takeoff() {
         Log.d(TAG, "takeoff: ")
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                drone.action.arm().andThen(drone.action.takeoff()).subscribe()
-            } catch (e: Exception) {
-                Log.e(TAG, "takeoff: $e")
-            }
+            drone.action.arm().andThen(drone.action.takeoff()).subscribe(
+                {
+                    // onNext - handle the result
+                },
+                { error ->
+                    Log.e(TAG, "takeoff: ", error)
+                }
+            )
         }
     }
 
     fun land() {
         Log.e(TAG, "land: ")
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                drone.action.land().subscribe()
-            } catch (e: Exception) {
-                Log.e(TAG, "land: $e")
-            }
+            drone.action.land().subscribe(
+                {
+                    // onNext - handle the result
+                },
+                { error ->
+                    Log.e(TAG, "land: $error", error)
+                }
+            )
         }
     }
 }
