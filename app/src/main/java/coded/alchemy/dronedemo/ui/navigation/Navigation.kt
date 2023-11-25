@@ -28,9 +28,7 @@ fun DroneDemoNavHost(
             ConnectionScreen(navController)
         }
         composable(route = Screen.ControlScreen.route) {
-            if (navController.previousBackStackEntry == null) {
-                ControlScreen()
-            }
+            ControlScreen()
         }
     }
 }
