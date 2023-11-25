@@ -8,39 +8,93 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import coded.alchemy.dronedemo.R
-import coded.alchemy.dronedemo.ui.connection.ConnectButton
-import coded.alchemy.dronedemo.ui.navigation.Route
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ControlScreen() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(),
-//        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        TelemetryPanel()
         FlightButtons()
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TelemetryPanel() {
+    Row {
+        Column {
+            Text(text = "Altitude")
 
+            // THis needs to be corrected
+            val altitudeState = remember { mutableStateOf(TextFieldValue()) }
+            Text(altitudeState.value.text)
+        }
+        Column {
+            Text(text = "Speed")
+
+            // THis needs to be corrected
+            val altitudeState = remember { mutableStateOf(TextFieldValue()) }
+            Text(altitudeState.value.text)
+        }
+        Column {
+            Text(text = "GPS")
+
+            // THis needs to be corrected
+            val altitudeState = remember { mutableStateOf(TextFieldValue()) }
+            Text(altitudeState.value.text)
+        }
+        Column {
+            Text(text = "Battery")
+
+            // THis needs to be corrected
+            val altitudeState = remember { mutableStateOf(TextFieldValue()) }
+            Text(altitudeState.value.text)
+        }
+    }
 }
 
 @Composable
 fun FlightButtons() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TakeOffLandButtons()
+        Row {
+            ElevationButtons()
+            DirectionalButtons()
+        }
+    }
+}
+
+@Composable
+fun TakeOffLandButtons() {
     Row {
-        ElevationButtons()
-        DirectionalButtons()
+        ElevatedButton(onClick = {
+
+        }) {
+            Text(stringResource(id = R.string.btn_takeoff))
+        }
+
+        ElevatedButton(onClick = {
+
+        }) {
+            Text(stringResource(id = R.string.btn_land))
+        }
     }
 }
 
@@ -48,10 +102,7 @@ fun FlightButtons() {
 @Composable
 fun ElevationButtons() {
     Column(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .fillMaxHeight(),
-//        horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.Center
     ) {
         ElevatedButton(onClick = {
 

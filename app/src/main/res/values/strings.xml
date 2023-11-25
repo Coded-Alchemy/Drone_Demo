@@ -8,4 +8,6 @@
     <string name="btn_right">Right</string>
     <string name="btn_up">Up</string>
     <string name="btn_down">Down</string>
+    <string name="btn_takeoff">Takeoff</string>
+    <string name="btn_land">Land</string>
 </resources>
