@@ -28,7 +28,7 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TelemetryPanel()
-        FlightButtons()
+        FlightButtons(viewModel)
     }
 }
 
@@ -67,11 +67,11 @@ fun TelemetryPanel() {
 }
 
 @Composable
-fun FlightButtons() {
+fun FlightButtons(viewModel: ControlScreenViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TakeOffLandButtons()
+        TakeOffLandButtons(viewModel)
         Row {
             ElevationButtons()
             DirectionalButtons()
@@ -80,16 +80,16 @@ fun FlightButtons() {
 }
 
 @Composable
-fun TakeOffLandButtons() {
+fun TakeOffLandButtons(viewModel: ControlScreenViewModel) {
     Row {
         ElevatedButton(onClick = {
-
+            viewModel.takeoff()
         }) {
             Text(stringResource(id = R.string.btn_takeoff))
         }
 
         ElevatedButton(onClick = {
-
+            viewModel.land()
         }) {
             Text(stringResource(id = R.string.btn_land))
         }
