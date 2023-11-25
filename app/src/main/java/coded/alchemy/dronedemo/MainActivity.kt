@@ -8,7 +8,6 @@ import coded.alchemy.dronedemo.data.ServerRepository
 import coded.alchemy.dronedemo.ui.app.DroneDemoApp
 import coded.alchemy.dronedemo.ui.theme.DroneDemoTheme
 import org.koin.android.ext.android.inject
-import org.koin.core.Koin
 
 
 class MainActivity : ComponentActivity() {
