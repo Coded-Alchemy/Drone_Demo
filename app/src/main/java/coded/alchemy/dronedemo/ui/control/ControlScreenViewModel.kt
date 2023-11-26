@@ -4,11 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
-import io.mavsdk.mission.Mission
-import io.mavsdk.mission.Mission.MissionItem
-import io.mavsdk.mission.Mission.MissionPlan
 import io.mavsdk.telemetry.Telemetry
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -66,23 +64,35 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
 
     fun moveUp() {
         Log.d(TAG, "moveUp: ")
-        viewModelScope.launch(Dispatchers.IO) {
-            val newAltitude = _absoluteAltitudeFloat.value + 10.0F
-            drone.action.gotoLocation(_latitudeDegDouble.value, _longitudeDegDouble.value, newAltitude, 0F).subscribe(
-                {
-                    // onNext - handle the result
-                },
-                { error ->
-                    Log.e(TAG, "takeoff: $error", error)
-                }
-            )
-        }
+        val newAltitude = _absoluteAltitudeFloat.value + 10.0F
+        moveDrone(
+            latitude = _latitudeDegDouble.value,
+            longitude = _longitudeDegDouble.value,
+            altitude = newAltitude,
+            yawDegree = 0F
+        )
     }
 
     fun moveDown() {
         Log.d(TAG, "moveDown: ")
         val newAltitude = _absoluteAltitudeFloat.value - 10.0F
-        moveDrone(latitude = _latitudeDegDouble.value, longitude = _longitudeDegDouble.value, altitude = newAltitude, yawDegree = 0F)
+        moveDrone(
+            latitude = _latitudeDegDouble.value,
+            longitude = _longitudeDegDouble.value,
+            altitude = newAltitude,
+            yawDegree = 0F
+        )
+    }
+
+    fun moveRight() {
+        Log.d(TAG, "moveForward: ")
+        val newLongitude = _longitudeDegDouble.value + 2
+        moveDrone(
+            latitude = _latitudeDegDouble.value,
+            longitude = newLongitude,
+            altitude = _relativeAltitudeFloat.value,
+            yawDegree = 0F
+        )
     }
 
     private fun moveDrone(latitude: Double, longitude: Double, altitude: Float, yawDegree: Float) {

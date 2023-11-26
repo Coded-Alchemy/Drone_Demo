@@ -77,7 +77,7 @@ fun FlightButtons(viewModel: ControlScreenViewModel) {
         TakeOffLandButtons(viewModel)
         Row {
             ElevationButtons(viewModel)
-            DirectionalButtons()
+            DirectionalButtons(viewModel)
         }
     }
 }
@@ -121,7 +121,7 @@ fun ElevationButtons(viewModel: ControlScreenViewModel) {
 }
 
 @Composable
-fun DirectionalButtons() {
+fun DirectionalButtons(viewModel: ControlScreenViewModel) {
     Column(
 //        modifier = Modifier
 //            .fillMaxWidth()
@@ -141,7 +141,7 @@ fun DirectionalButtons() {
                 Text(stringResource(id = R.string.btn_left))
             }
             ElevatedButton(onClick = {
-
+                viewModel.moveRight()
             }) {
                 Text(stringResource(id = R.string.btn_right))
             }
@@ -150,7 +150,7 @@ fun DirectionalButtons() {
         ElevatedButton(onClick = {
 
         }) {
-            Text(stringResource(id = R.string.btn_down))
+            Text(stringResource(id = R.string.btn_backward))
         }
     }
 }

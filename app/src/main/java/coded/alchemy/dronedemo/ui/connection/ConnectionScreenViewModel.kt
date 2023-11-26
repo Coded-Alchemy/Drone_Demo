@@ -29,8 +29,10 @@ class ConnectionScreenViewModel(
                 droneRepository.drone = System(serverRepository.host, port)
                 _isConnected.emit(true)
             } catch (exception: Exception) {
-                _isConnected.emit(false)
                 Log.e(TAG, exception.toString())
+                _isConnected.emit(false)
+                serverRepository.mavServer().stop()
+                serverRepository.mavServer().destroy()
             }
         }
     }
