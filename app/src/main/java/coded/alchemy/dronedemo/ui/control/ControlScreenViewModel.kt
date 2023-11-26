@@ -30,6 +30,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
     private val _flightMode = MutableStateFlow("")
     val flightMode: StateFlow<String> = _flightMode
 
+    private val _satelliteCount = MutableStateFlow(0)
+    val satelliteCount: StateFlow<Int> = _satelliteCount
+
     var stopDrone = false
 
     init {
@@ -159,6 +162,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         getPositionData()
         getFlightMode()
         getArmedValue()
+        getGpsData()
     }
 
     private fun getPositionData() {
@@ -211,7 +215,14 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
     private fun getGpsData() {
         Log.d(TAG, "getGpsData: ")
         viewModelScope.launch(Dispatchers.IO) {
-
+            droneRepository.drone.telemetry.gpsInfo.distinctUntilChanged().subscribe(
+                { gpsInfo: Telemetry.GpsInfo ->
+                    _satelliteCount.value = gpsInfo.numSatellites
+                },
+                { error ->
+                    Log.e(TAG, "Error in GPS telemetry subscription", error)
+                }
+            )
         }
     }
 }

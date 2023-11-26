@@ -39,6 +39,7 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
 @Composable
 fun TelemetryPanel(viewModel: ControlScreenViewModel) {
     val relativeAltitudeFloatState by viewModel.relativeAltitudeFloat.collectAsState()
+    val satelliteCountState by viewModel.satelliteCount.collectAsState()
 
     Row {
         Column {
@@ -54,10 +55,7 @@ fun TelemetryPanel(viewModel: ControlScreenViewModel) {
         }
         Column {
             Text(text = "GPS")
-
-            // THis needs to be corrected
-            val altitudeState = remember { mutableStateOf(TextFieldValue()) }
-            Text(altitudeState.value.text)
+            Text(satelliteCountState.toString())
         }
         Column {
             Text(text = "Battery")
