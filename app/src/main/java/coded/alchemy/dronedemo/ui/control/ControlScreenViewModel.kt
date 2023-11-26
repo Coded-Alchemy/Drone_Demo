@@ -36,6 +36,8 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
     private val _batteryRemaining = MutableStateFlow(Float.MIN_VALUE)
     val batteryRemaining: StateFlow<Float> = _batteryRemaining
 
+    private val _speed = MutableStateFlow(Float.MIN_VALUE)
+    val speed: StateFlow<Float> = _speed
 
     init {
         getTelemetryData()
@@ -166,6 +168,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         getArmedValue()
         getGpsData()
         getBatteryData()
+        getSpeed()
     }
 
     private fun getPositionData() {
@@ -239,6 +242,22 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
                 { error ->
                     Log.e(TAG, "Error in battery telemetry subscription", error)
 
+                }
+            )
+        }
+
+    }
+
+    private fun getSpeed() {
+        Log.d(TAG, "getSpeed: ")
+        viewModelScope.launch(Dispatchers.IO) {
+            droneRepository.drone.telemetry.rawGps.subscribe(
+                {  metrics: Telemetry.RawGps ->
+                    Log.d(TAG, "getSpeed: ${metrics.velocityMS}")
+                    _speed.value = metrics.velocityMS
+                },
+                { error ->
+                    Log.e(TAG, "Error in fixedwingMetrics telemetry subscription", error)
                 }
             )
         }

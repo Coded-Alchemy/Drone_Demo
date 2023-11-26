@@ -5,19 +5,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import coded.alchemy.dronedemo.R
+import coded.alchemy.dronedemo.util.addMph
 import coded.alchemy.dronedemo.util.addPercentSign
+import coded.alchemy.dronedemo.util.calculateMphFromVelocity
 import coded.alchemy.dronedemo.util.formatTenthsAndHundredths
 import coded.alchemy.dronedemo.util.formatToTenths
 import org.koin.androidx.compose.koinViewModel
@@ -42,42 +45,69 @@ fun TelemetryPanel(viewModel: ControlScreenViewModel) {
     val relativeAltitudeFloatState by viewModel.relativeAltitudeFloat.collectAsState()
     val satelliteCountState by viewModel.satelliteCount.collectAsState()
     val batteryPercentage by viewModel.batteryRemaining.collectAsState()
+    val droneSpeed by viewModel.speed.collectAsState()
 
-    Row {
-        Column {
-            Text(text = "Altitude")
-            Text("${relativeAltitudeFloatState.formatToTenths()} m")
+    Card(
+        modifier =
+        Modifier
+            .padding(all = dimensionResource(id = R.dimen.default_padding))
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = dimensionResource(id = R.dimen.card_elevation)
+        )
+    ) {
+        Row {
+            Column(
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+            ) {
+                Text(text = "Altitude")
+                Text("${relativeAltitudeFloatState.formatToTenths()} m")
+            }
+
+            Column(
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+            ) {
+                Text(text = "Speed")
+                Text(droneSpeed.calculateMphFromVelocity().formatToTenths().addMph())
+            }
+
+            Column(
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+            ) {
+                Text(text = "GPS")
+                Text(satelliteCountState.toString())
+            }
+
+            Column(
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+            ) {
+                Text(text = "Battery")
+                Text(batteryPercentage.formatTenthsAndHundredths().addPercentSign())
+            }
         }
 
-        Column {
-            Text(text = "Speed")
-
-            // THis needs to be corrected
-            val altitudeState = remember { mutableStateOf(TextFieldValue()) }
-            Text(altitudeState.value.text)
-        }
-
-        Column {
-            Text(text = "GPS")
-            Text(satelliteCountState.toString())
-        }
-
-        Column {
-            Text(text = "Battery")
-            Text(batteryPercentage.formatTenthsAndHundredths().addPercentSign())
-        }
     }
 }
 
 @Composable
 fun FlightButtons(viewModel: ControlScreenViewModel) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    Card(
+        modifier =
+        Modifier
+            .padding(all = dimensionResource(id = R.dimen.default_padding))
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = dimensionResource(id = R.dimen.card_elevation)
+        )
     ) {
-        TakeOffLandButtons(viewModel)
-        Row {
-            ElevationButtons(viewModel)
-            DirectionalButtons(viewModel)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TakeOffLandButtons(viewModel)
+            Row {
+                ElevationButtons(viewModel)
+                DirectionalButtons(viewModel)
+            }
         }
     }
 }

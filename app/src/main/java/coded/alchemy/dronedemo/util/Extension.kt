@@ -6,10 +6,24 @@ fun Float.formatToTenths(): String {
 }
 
 fun Float.formatTenthsAndHundredths(): String {
-    val formattedNumber = "%.2f".format(this)
-    return formattedNumber.substring(formattedNumber.indexOf('.') + 1)
+    return when {
+        this >= 1.0 -> "100"
+        else -> {
+            val formattedNumber = "%.2f".format(this)
+            formattedNumber.substring(formattedNumber.indexOf('.') + 1)
+        }
+    }
 }
 
 fun String.addPercentSign(): String {
     return "$this%"
+}
+
+fun Float.calculateMphFromVelocity(): Float {
+    val conversionFactor = 2.23694f
+    return this * conversionFactor
+}
+
+fun String.addMph(): String {
+    return "$this mph"
 }
