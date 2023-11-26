@@ -1,7 +1,5 @@
 package coded.alchemy.dronedemo.ui.control
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import coded.alchemy.dronedemo.R
+import coded.alchemy.dronedemo.util.addPercentSign
+import coded.alchemy.dronedemo.util.formatTenthsAndHundredths
+import coded.alchemy.dronedemo.util.formatToTenths
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -40,12 +41,14 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
 fun TelemetryPanel(viewModel: ControlScreenViewModel) {
     val relativeAltitudeFloatState by viewModel.relativeAltitudeFloat.collectAsState()
     val satelliteCountState by viewModel.satelliteCount.collectAsState()
+    val batteryPercentage by viewModel.batteryRemaining.collectAsState()
 
     Row {
         Column {
             Text(text = "Altitude")
-            Text(relativeAltitudeFloatState.toString())
+            Text("${relativeAltitudeFloatState.formatToTenths()} m")
         }
+
         Column {
             Text(text = "Speed")
 
@@ -53,16 +56,15 @@ fun TelemetryPanel(viewModel: ControlScreenViewModel) {
             val altitudeState = remember { mutableStateOf(TextFieldValue()) }
             Text(altitudeState.value.text)
         }
+
         Column {
             Text(text = "GPS")
             Text(satelliteCountState.toString())
         }
+
         Column {
             Text(text = "Battery")
-
-            // THis needs to be corrected
-            val altitudeState = remember { mutableStateOf(TextFieldValue()) }
-            Text(altitudeState.value.text)
+            Text(batteryPercentage.formatTenthsAndHundredths().addPercentSign())
         }
     }
 }

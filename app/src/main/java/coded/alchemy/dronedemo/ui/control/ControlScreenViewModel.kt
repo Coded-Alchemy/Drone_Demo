@@ -33,7 +33,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
     private val _satelliteCount = MutableStateFlow(0)
     val satelliteCount: StateFlow<Int> = _satelliteCount
 
-    var stopDrone = false
+    private val _batteryRemaining = MutableStateFlow(Float.MIN_VALUE)
+    val batteryRemaining: StateFlow<Float> = _batteryRemaining
+
 
     init {
         getTelemetryData()
@@ -163,6 +165,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         getFlightMode()
         getArmedValue()
         getGpsData()
+        getBatteryData()
     }
 
     private fun getPositionData() {
@@ -221,6 +224,21 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
                 },
                 { error ->
                     Log.e(TAG, "Error in GPS telemetry subscription", error)
+                }
+            )
+        }
+    }
+
+    private fun getBatteryData() {
+        Log.d(TAG, "getBatteryData: ")
+        viewModelScope.launch(Dispatchers.IO) {
+            droneRepository.drone.telemetry.battery.distinctUntilChanged().subscribe(
+                { battery: Telemetry.Battery ->
+                    _batteryRemaining.value = battery.remainingPercent
+                },
+                { error ->
+                    Log.e(TAG, "Error in battery telemetry subscription", error)
+
                 }
             )
         }
