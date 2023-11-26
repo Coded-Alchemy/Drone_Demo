@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
+import io.mavsdk.mission.Mission
+import io.mavsdk.mission.Mission.MissionItem
+import io.mavsdk.mission.Mission.MissionPlan
 import io.mavsdk.telemetry.Telemetry
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,16 +16,21 @@ import kotlinx.coroutines.launch
 class ControlScreenViewModel(private val droneRepository: DroneRepository) : ViewModel() {
     private val TAG = this.javaClass.simpleName
     private val drone = droneRepository.drone
-    private val disposables = CompositeDisposable()
 
     private val _relativeAltitudeFloat = MutableStateFlow(Float.MIN_VALUE)
     val relativeAltitudeFloat: StateFlow<Float> = _relativeAltitudeFloat
+
+    private val _absoluteAltitudeFloat = MutableStateFlow(Float.MIN_VALUE)
+    val absoluteAltitudeFloat: StateFlow<Float> = _absoluteAltitudeFloat
 
     private val _latitudeDegDouble = MutableStateFlow(Double.MIN_VALUE)
     val latitudeDegDouble: StateFlow<Double> = _latitudeDegDouble
 
     private val _longitudeDegDouble = MutableStateFlow(Double.MIN_VALUE)
     val longitudeDegDouble: StateFlow<Double> = _longitudeDegDouble
+
+    private val _flightMode = MutableStateFlow("")
+    val flightMode: StateFlow<String> = _flightMode
 
     init {
         getTelemetryData()
@@ -44,7 +51,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
     }
 
     fun land() {
-        Log.e(TAG, "land: ")
+        Log.d(TAG, "land: ")
         viewModelScope.launch(Dispatchers.IO) {
             drone.action.land().subscribe(
                 {
@@ -57,50 +64,72 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         }
     }
 
-    private fun getTelemetryData() {
-        Log.d(TAG, "getTelemetryData: ")
-        getPositionData()
-
+    fun moveUp() {
+        Log.d(TAG, "moveUp: ")
         viewModelScope.launch(Dispatchers.IO) {
-            disposables.add(
-                droneRepository.drone.telemetry.flightMode.distinctUntilChanged()
-                    .subscribe(
-                        { flightMode: Telemetry.FlightMode ->
-                            Log.d(TAG, "flight mode: $flightMode")
-                        },
-                        { error ->
-                            Log.e(TAG, "Error in flight mode telemetry subscription", error)
-                        })
+            val newAltitude = _absoluteAltitudeFloat.value + 10.0F
+            drone.action.gotoLocation(_latitudeDegDouble.value, _longitudeDegDouble.value, newAltitude, 0F).subscribe(
+                {
+                    // onNext - handle the result
+                },
+                { error ->
+                    Log.e(TAG, "takeoff: $error", error)
+                }
             )
-
-            disposables.add(
-                droneRepository.drone.telemetry.armed.distinctUntilChanged()
-                    .subscribe(
-                        { armed: Boolean ->
-                            Log.d(TAG, "armed: $armed")
-                        },
-                        { error ->
-                            Log.e(TAG, "Error in armed telemetry subscription", error)
-                        }
-                    )
-            )
-
-
         }
     }
 
+    private fun getTelemetryData() {
+        Log.d(TAG, "getTelemetryData: ")
+        getPositionData()
+        getFlightMode()
+        getArmedValue()
+    }
+
     private fun getPositionData() {
+        Log.d(TAG, "getPositionData: ")
         viewModelScope.launch(Dispatchers.IO) {
             droneRepository.drone.telemetry.position
                 .subscribe(
                     { position: Telemetry.Position ->
                         _relativeAltitudeFloat.value = position.relativeAltitudeM
+                        _absoluteAltitudeFloat.value = position.absoluteAltitudeM
                         _latitudeDegDouble.value = position.latitudeDeg
                         _longitudeDegDouble.value = position.longitudeDeg
                     },
                     { error ->
                         Log.e(TAG, "Error in position telemetry subscription", error)
                     })
+        }
+    }
+
+    private fun getFlightMode() {
+        Log.d(TAG, "getFlightMode: ")
+        viewModelScope.launch(Dispatchers.IO) {
+            droneRepository.drone.telemetry.flightMode.distinctUntilChanged()
+                .subscribe(
+                    { flightMode: Telemetry.FlightMode ->
+                        Log.d(TAG, "flight mode: $flightMode")
+                        _flightMode.value = flightMode.toString()
+                    },
+                    { error ->
+                        Log.e(TAG, "Error in flight mode telemetry subscription", error)
+                    })
+        }
+    }
+
+    private fun getArmedValue() {
+        Log.d(TAG, "getArmedValue: ")
+        viewModelScope.launch(Dispatchers.IO) {
+            droneRepository.drone.telemetry.armed.distinctUntilChanged()
+                .subscribe(
+                    { armed: Boolean ->
+                        Log.d(TAG, "armed: $armed")
+                    },
+                    { error ->
+                        Log.e(TAG, "Error in armed telemetry subscription", error)
+                    }
+                )
         }
     }
 }

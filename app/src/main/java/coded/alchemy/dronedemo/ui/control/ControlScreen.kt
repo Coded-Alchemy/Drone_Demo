@@ -1,5 +1,7 @@
 package coded.alchemy.dronedemo.ui.control
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -74,7 +76,7 @@ fun FlightButtons(viewModel: ControlScreenViewModel) {
     ) {
         TakeOffLandButtons(viewModel)
         Row {
-            ElevationButtons()
+            ElevationButtons(viewModel)
             DirectionalButtons()
         }
     }
@@ -98,13 +100,14 @@ fun TakeOffLandButtons(viewModel: ControlScreenViewModel) {
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ElevationButtons() {
+fun ElevationButtons(viewModel: ControlScreenViewModel) {
     Column(
         verticalArrangement = Arrangement.Center
     ) {
         ElevatedButton(onClick = {
-
+            viewModel.moveUp()
         }) {
             Text(stringResource(id = R.string.btn_up))
         }
