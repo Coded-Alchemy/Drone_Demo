@@ -123,23 +123,21 @@ fun ElevationButtons(viewModel: ControlScreenViewModel) {
 @Composable
 fun DirectionalButtons(viewModel: ControlScreenViewModel) {
     Column(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ElevatedButton(onClick = {
-
+            viewModel.moveForward()
         }) {
             Text(stringResource(id = R.string.btn_forward))
         }
 
         Row {
             ElevatedButton(onClick = {
-
+                viewModel.moveLeft()
             }) {
                 Text(stringResource(id = R.string.btn_left))
             }
+
             ElevatedButton(onClick = {
                 viewModel.moveRight()
             }) {
@@ -148,7 +146,7 @@ fun DirectionalButtons(viewModel: ControlScreenViewModel) {
         }
 
         ElevatedButton(onClick = {
-
+            viewModel.moveBackward()
         }) {
             Text(stringResource(id = R.string.btn_backward))
         }

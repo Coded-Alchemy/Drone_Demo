@@ -85,11 +85,44 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
     }
 
     fun moveRight() {
-        Log.d(TAG, "moveForward: ")
-        val newLongitude = _longitudeDegDouble.value + 2
+        Log.d(TAG, "moveRight: ")
+        val newLongitude = _longitudeDegDouble.value + 1
         moveDrone(
             latitude = _latitudeDegDouble.value,
             longitude = newLongitude,
+            altitude = _relativeAltitudeFloat.value,
+            yawDegree = 0F
+        )
+    }
+
+    fun moveLeft() {
+        Log.d(TAG, "moveLeft: ")
+        val newLongitude = _longitudeDegDouble.value - 1
+        moveDrone(
+            latitude = _latitudeDegDouble.value,
+            longitude = newLongitude,
+            altitude = _relativeAltitudeFloat.value,
+            yawDegree = 0F
+        )
+    }
+
+    fun moveForward() {
+        Log.d(TAG, "moveForward: ")
+        val newLatitude = _latitudeDegDouble.value + 1
+        moveDrone(
+            latitude = newLatitude,
+            longitude = _longitudeDegDouble.value,
+            altitude = _relativeAltitudeFloat.value,
+            yawDegree = 0F
+        )
+    }
+
+    fun moveBackward() {
+        Log.d(TAG, "moveBackward: ")
+        val newLatitude = _latitudeDegDouble.value - 1
+        moveDrone(
+            latitude = newLatitude,
+            longitude = _longitudeDegDouble.value,
             altitude = _relativeAltitudeFloat.value,
             yawDegree = 0F
         )
