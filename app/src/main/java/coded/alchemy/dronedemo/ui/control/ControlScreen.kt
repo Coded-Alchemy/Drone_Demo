@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,20 +29,19 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TelemetryPanel()
+        TelemetryPanel(viewModel)
         FlightButtons(viewModel)
     }
 }
 
 @Composable
-fun TelemetryPanel() {
+fun TelemetryPanel(viewModel: ControlScreenViewModel) {
+    val relativeAltitudeFloatState by viewModel.relativeAltitudeFloat.collectAsState()
+
     Row {
         Column {
             Text(text = "Altitude")
-
-            // THis needs to be corrected
-            val altitudeState = remember { mutableStateOf(TextFieldValue()) }
-            Text(altitudeState.value.text)
+            Text(relativeAltitudeFloatState.toString())
         }
         Column {
             Text(text = "Speed")
