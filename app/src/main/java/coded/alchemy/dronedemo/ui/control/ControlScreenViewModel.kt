@@ -79,6 +79,26 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         }
     }
 
+    fun moveDown() {
+        Log.d(TAG, "moveDown: ")
+        val newAltitude = _absoluteAltitudeFloat.value - 10.0F
+        moveDrone(latitude = _latitudeDegDouble.value, longitude = _longitudeDegDouble.value, altitude = newAltitude, yawDegree = 0F)
+    }
+
+    private fun moveDrone(latitude: Double, longitude: Double, altitude: Float, yawDegree: Float) {
+        Log.d(TAG, "moveDrone: ")
+        viewModelScope.launch(Dispatchers.IO) {
+            drone.action.gotoLocation(latitude, longitude, altitude, yawDegree).subscribe(
+                {
+                    // onNext - handle the result
+                },
+                { error ->
+                    Log.e(TAG, "moveDrone: $error", error)
+                }
+            )
+        }
+    }
+
     private fun getTelemetryData() {
         Log.d(TAG, "getTelemetryData: ")
         getPositionData()

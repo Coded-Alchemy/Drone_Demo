@@ -113,7 +113,7 @@ fun ElevationButtons(viewModel: ControlScreenViewModel) {
         }
 
         ElevatedButton(onClick = {
-
+            viewModel.moveDown()
         }) {
             Text(stringResource(id = R.string.btn_down))
         }
