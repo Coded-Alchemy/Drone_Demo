@@ -56,7 +56,10 @@ fun TelemetryPanel(viewModel: ControlScreenViewModel) {
             defaultElevation = dimensionResource(id = R.dimen.card_elevation)
         )
     ) {
-        Row {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Column(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
             ) {
@@ -85,7 +88,6 @@ fun TelemetryPanel(viewModel: ControlScreenViewModel) {
                 Text(batteryPercentage.formatTenthsAndHundredths().addPercentSign())
             }
         }
-
     }
 }
 
@@ -101,10 +103,14 @@ fun FlightButtons(viewModel: ControlScreenViewModel) {
         )
     ) {
         Column(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.default_padding)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TakeOffLandButtons(viewModel)
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 ElevationButtons(viewModel)
                 DirectionalButtons(viewModel)
             }

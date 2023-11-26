@@ -173,7 +173,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
 
     private fun getPositionData() {
         Log.d(TAG, "getPositionData: ")
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             droneRepository.drone.telemetry.position
                 .subscribe(
                     { position: Telemetry.Position ->
@@ -253,7 +253,6 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         viewModelScope.launch(Dispatchers.IO) {
             droneRepository.drone.telemetry.rawGps.subscribe(
                 {  metrics: Telemetry.RawGps ->
-                    Log.d(TAG, "getSpeed: ${metrics.velocityMS}")
                     _speed.value = metrics.velocityMS
                 },
                 { error ->
