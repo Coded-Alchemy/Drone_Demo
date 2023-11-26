@@ -30,6 +30,8 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
     private val _flightMode = MutableStateFlow("")
     val flightMode: StateFlow<String> = _flightMode
 
+    var stopDrone = false
+
     init {
         getTelemetryData()
     }
@@ -128,6 +130,16 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         )
     }
 
+    fun stop() {
+        Log.d(TAG, "stop: ")
+        moveDrone(
+            latitude = _latitudeDegDouble.value,
+            longitude = _longitudeDegDouble.value,
+            altitude = _relativeAltitudeFloat.value,
+            yawDegree = 0F
+        )
+    }
+
     private fun moveDrone(latitude: Double, longitude: Double, altitude: Float, yawDegree: Float) {
         Log.d(TAG, "moveDrone: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -193,6 +205,13 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
                         Log.e(TAG, "Error in armed telemetry subscription", error)
                     }
                 )
+        }
+    }
+
+    private fun getGpsData() {
+        Log.d(TAG, "getGpsData: ")
+        viewModelScope.launch(Dispatchers.IO) {
+
         }
     }
 }

@@ -99,8 +99,6 @@ fun TakeOffLandButtons(viewModel: ControlScreenViewModel) {
     }
 }
 
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ElevationButtons(viewModel: ControlScreenViewModel) {
     Column(
@@ -111,6 +109,14 @@ fun ElevationButtons(viewModel: ControlScreenViewModel) {
         }) {
             Text(stringResource(id = R.string.btn_up))
         }
+
+        // TODO: Fix stop functionality: altitude throws it off.
+        /*ElevatedButton(onClick = {
+            viewModel.stopDrone = true
+            viewModel.stop()
+        }) {
+            Text(stringResource(id = R.string.btn_stop))
+        }*/
 
         ElevatedButton(onClick = {
             viewModel.moveDown()
