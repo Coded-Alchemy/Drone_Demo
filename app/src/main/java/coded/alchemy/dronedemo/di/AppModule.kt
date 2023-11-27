@@ -7,7 +7,12 @@ import org.koin.dsl.module
 import coded.alchemy.dronedemo.ui.connection.ConnectionScreenViewModel
 import coded.alchemy.dronedemo.ui.control.ControlScreenViewModel
 
-
+/**
+ * AppModule.kt
+ *
+ * This file provides the Koin dependency injection module for the application.
+ * @author Taji Abdullah
+ * */
 val appModule = module {
     viewModelOf(::ConnectionScreenViewModel)
     viewModelOf(::ControlScreenViewModel)
