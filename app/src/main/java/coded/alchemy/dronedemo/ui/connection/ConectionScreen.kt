@@ -23,6 +23,13 @@ import coded.alchemy.dronedemo.R
 import coded.alchemy.dronedemo.ui.navigation.Route
 import org.koin.androidx.compose.koinViewModel
 
+/**
+ * ConnectionScreen.kt
+ *
+ * This [Composable] function declares the [ConnectionScreen].
+ * This screen provides the UI to connect to a MavLink System.
+ * @author Taji Abdullah
+ * */
 @Composable
 fun ConnectionScreen(navController: NavHostController, viewModel: ConnectionScreenViewModel = koinViewModel()) {
     Column(
@@ -34,6 +41,10 @@ fun ConnectionScreen(navController: NavHostController, viewModel: ConnectionScre
     }
 }
 
+/**
+ * This [Composable] provides the [ElevatedButton] responsible for connecting to a MavLink System.
+ * TODO: enhance with screen state functionality to remedy the double tap needed to navigate away.
+ * */
 @Composable
 fun ConnectButton(navController: NavHostController, viewModel: ConnectionScreenViewModel) {
     ElevatedButton(onClick = {
@@ -47,6 +58,9 @@ fun ConnectButton(navController: NavHostController, viewModel: ConnectionScreenV
     }
 }
 
+/**
+ * [Composable] to provide a [LinearProgressIndicator].
+ * */
 @Composable
 fun ProgressView() {
     Box(

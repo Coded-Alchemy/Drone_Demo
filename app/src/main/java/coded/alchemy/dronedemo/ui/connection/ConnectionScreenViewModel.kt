@@ -1,6 +1,7 @@
 package coded.alchemy.dronedemo.ui.connection
 
 import android.util.Log
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
@@ -13,6 +14,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ConnectionScreenViewModel.kt
+ *
+ * This class contains the drone connection logic.
+ * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
+ * @param serverRepository [ServerRepository] gives access to [ServerRepository.mavServer].
+ * @property isConnected [Boolean] observable by [StateFlow] to expose [_isConnected] value
+ * to determine if a [System] is connected.
+ * @author Taji Abdullah
+ * TODO: Improve this class by introducing a UseCase class.
+ * */
 class ConnectionScreenViewModel(
     private val droneRepository: DroneRepository,
     private val serverRepository: ServerRepository
