@@ -18,10 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import coded.alchemy.dronedemo.R
-import coded.alchemy.dronedemo.util.addMph
-import coded.alchemy.dronedemo.util.addPercentSign
+import coded.alchemy.dronedemo.util.appendMph
+import coded.alchemy.dronedemo.util.appendPercentSign
 import coded.alchemy.dronedemo.util.calculateMphFromVelocity
-import coded.alchemy.dronedemo.util.formatTenthsAndHundredths
+import coded.alchemy.dronedemo.util.formatToTenthsAndHundredths
 import coded.alchemy.dronedemo.util.formatToTenths
 import org.koin.androidx.compose.koinViewModel
 
@@ -71,7 +71,7 @@ fun TelemetryPanel(viewModel: ControlScreenViewModel) {
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
             ) {
                 Text(text = "Speed")
-                Text(droneSpeed.calculateMphFromVelocity().formatToTenths().addMph())
+                Text(droneSpeed.calculateMphFromVelocity().formatToTenths().appendMph())
             }
 
             Column(
@@ -85,7 +85,7 @@ fun TelemetryPanel(viewModel: ControlScreenViewModel) {
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
             ) {
                 Text(text = "Battery")
-                Text(batteryPercentage.formatTenthsAndHundredths().addPercentSign())
+                Text(batteryPercentage.formatToTenthsAndHundredths().appendPercentSign())
             }
         }
     }
