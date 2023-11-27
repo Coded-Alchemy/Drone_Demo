@@ -9,11 +9,20 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import coded.alchemy.dronedemo.data.DroneRepository
+import coded.alchemy.dronedemo.data.ServerRepository
 import coded.alchemy.dronedemo.di.appModule
 import coded.alchemy.dronedemo.ui.connection.ConnectionScreen
 import coded.alchemy.dronedemo.ui.navigation.DroneDemoNavHost
 import org.koin.compose.KoinApplication
 
+/**
+ * DroneDemoApp.kt
+ *
+ * This file provides the [Composable] UI application entry point.
+ * Koin Dependency injection is instantiated here.
+ * @author Taji Abdullah
+ * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DroneDemoApp() {
