@@ -25,7 +25,13 @@ import coded.alchemy.dronedemo.util.formatToTenthsAndHundredths
 import coded.alchemy.dronedemo.util.formatToTenths
 import org.koin.androidx.compose.koinViewModel
 
-
+/**
+ * ControlScreen.kt
+ *
+ * This [Composable] function declares the [ControlScreen].
+ * This screen provides the UI to control a MavLink System.
+ * @author Taji Abdullah
+ * */
 @Composable
 fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
     Column(
@@ -40,6 +46,10 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
     }
 }
 
+/**
+ * This [Composable] provides the [TelemetryPanel] responsible for displaying telemetry
+ * data from a MavLink System.
+ * */
 @Composable
 fun TelemetryPanel(viewModel: ControlScreenViewModel) {
     val relativeAltitudeFloatState by viewModel.relativeAltitudeFloat.collectAsState()
@@ -91,6 +101,10 @@ fun TelemetryPanel(viewModel: ControlScreenViewModel) {
     }
 }
 
+/**
+ * This [Composable] provides the [FlightButtons] responsible controlling a MavLink System.
+ * it is comprised of [TakeOffLandButtons], [ElevationButtons], and [DirectionalButtons].
+ * */
 @Composable
 fun FlightButtons(viewModel: ControlScreenViewModel) {
     Card(
@@ -118,6 +132,10 @@ fun FlightButtons(viewModel: ControlScreenViewModel) {
     }
 }
 
+/**
+ * This [Composable] provides the [TakeOffLandButtons] responsible for the takeoff and
+ * landing of a MavLink System.
+ * */
 @Composable
 fun TakeOffLandButtons(viewModel: ControlScreenViewModel) {
     Row {
@@ -135,6 +153,9 @@ fun TakeOffLandButtons(viewModel: ControlScreenViewModel) {
     }
 }
 
+/**
+ * This [Composable] provides the [ElevationButtons] responsible for altitude of a MavLink System.
+ * */
 @Composable
 fun ElevationButtons(viewModel: ControlScreenViewModel) {
     Column(
@@ -162,6 +183,10 @@ fun ElevationButtons(viewModel: ControlScreenViewModel) {
     }
 }
 
+/**
+ * This [Composable] provides the [DirectionalButtons] responsible for moving a MavLink System
+ * backward, forward, left, and right.
+ * */
 @Composable
 fun DirectionalButtons(viewModel: ControlScreenViewModel) {
     Column(

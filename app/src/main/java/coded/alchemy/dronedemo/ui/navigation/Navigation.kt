@@ -11,6 +11,21 @@ import coded.alchemy.dronedemo.ui.connection.ConnectionScreen
 import coded.alchemy.dronedemo.ui.control.ControlScreen
 import coded.alchemy.dronedemo.ui.navigation.Route.CAN_NAVIGATE
 
+/**
+ * Navigation.kt
+ *
+ * This file is concerned with application navigation from screen to screen.
+ * @author Taji Abdullah
+ * */
+
+/**
+ * This [Composable] function provides a [NavHostController], sets the first screen upon
+ * application entry, and is responsible for navigation.
+ *
+ * @param modifier
+ * @param navController
+ * @param startDestination
+ * */
 @Composable
 fun DroneDemoNavHost(
     modifier: Modifier = Modifier,

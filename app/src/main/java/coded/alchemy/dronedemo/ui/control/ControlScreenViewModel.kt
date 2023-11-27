@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
+import coded.alchemy.dronedemo.data.ServerRepository
+import io.mavsdk.System
 import io.mavsdk.telemetry.Telemetry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -11,6 +13,30 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ControlScreenViewModel.kt
+ *
+ * This class contains the drone connection logic.
+ * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
+ * @property relativeAltitudeFloat [StateFlow] [Float] that observes
+ * [_relativeAltitudeFloat] to expose it publicly. This is the [drone] altitude used.
+ * @property absoluteAltitudeFloat [StateFlow] [Float] that observes
+ * [_absoluteAltitudeFloat] to expose it publicly. This is not currently used.
+ * @property latitudeDegDouble [StateFlow] [Double] that observes
+ * [_latitudeDegDouble] to expose it publicly. This is the [drone] latitude.
+ * @property longitudeDegDouble [StateFlow] [Double] that observes
+ * [_longitudeDegDouble] to expose it publicly. This is the [drone] longitude.
+ * @property flightMode [StateFlow] [String] that observes
+ * [_flightMode] to expose it publicly. This is the [drone] current flight mode.
+ * @property satelliteCount [StateFlow] [Int] that observes
+ * [_satelliteCount] to expose it publicly. This is the [drone] satellite count.
+ * @property batteryRemaining [StateFlow] [Float] that observes
+ * [_batteryRemaining] to expose it publicly. This is the [drone] battery percentage.
+ * @property speed [StateFlow] [Float] that observes
+ * [_speed] to expose it publicly. This is the [drone] velocity.
+ * @author Taji Abdullah
+ * TODO: Improve this class by introducing UseCase classes to abstract business logic.
+ * */
 class ControlScreenViewModel(private val droneRepository: DroneRepository) : ViewModel() {
     private val TAG = this.javaClass.simpleName
     private val drone = droneRepository.drone
@@ -39,10 +65,17 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
     private val _speed = MutableStateFlow(Float.MIN_VALUE)
     val speed: StateFlow<Float> = _speed
 
+    /**
+     * This function gets called when this class is instantiated to start collecting
+     * the telemetry data.
+     * */
     init {
         getTelemetryData()
     }
 
+    /**
+     * This function makes the [drone] start to fly.
+     * */
     fun takeoff() {
         Log.d(TAG, "takeoff: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -57,6 +90,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         }
     }
 
+    /**
+     * This function makes the [drone] land.
+     * */
     fun land() {
         Log.d(TAG, "land: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -71,6 +107,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         }
     }
 
+    /**
+     * This function calls [moveDrone] to move the [drone] down/ascend.
+     * */
     fun moveUp() {
         Log.d(TAG, "moveUp: ")
         val newAltitude = _absoluteAltitudeFloat.value + 10.0F
@@ -82,6 +121,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         )
     }
 
+    /**
+     * This function calls [moveDrone] to move the [drone] down/descend.
+     * */
     fun moveDown() {
         Log.d(TAG, "moveDown: ")
         val newAltitude = _absoluteAltitudeFloat.value - 10.0F
@@ -93,6 +135,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         )
     }
 
+    /**
+     * This function calls [moveDrone] to move the [drone] right.
+     * */
     fun moveRight() {
         Log.d(TAG, "moveRight: ")
         val newLongitude = _longitudeDegDouble.value + 1
@@ -104,6 +149,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         )
     }
 
+    /**
+     * This function calls [moveDrone] to move the [drone] left.
+     * */
     fun moveLeft() {
         Log.d(TAG, "moveLeft: ")
         val newLongitude = _longitudeDegDouble.value - 1
@@ -115,6 +163,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         )
     }
 
+    /**
+     * This function calls [moveDrone] to move the [drone] forward.
+     * */
     fun moveForward() {
         Log.d(TAG, "moveForward: ")
         val newLatitude = _latitudeDegDouble.value + 1
@@ -126,6 +177,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         )
     }
 
+    /**
+     * This function calls [moveDrone] to move the [drone] backwards.
+     * */
     fun moveBackward() {
         Log.d(TAG, "moveBackward: ")
         val newLatitude = _latitudeDegDouble.value - 1
@@ -137,6 +191,10 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         )
     }
 
+    /**
+     * This function is used to stop the [drone] from moving.
+     * TODO: altitude needs a tweak to prevent making the drone drop altitude.
+     * */
     fun stop() {
         Log.d(TAG, "stop: ")
         moveDrone(
@@ -147,6 +205,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         )
     }
 
+    /**
+     * This function is used to move the [drone] in various directions.
+     * */
     private fun moveDrone(latitude: Double, longitude: Double, altitude: Float, yawDegree: Float) {
         Log.d(TAG, "moveDrone: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -161,6 +222,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         }
     }
 
+    /**
+     * This function starts the observation of ths [drone] telemetry data.
+     * */
     private fun getTelemetryData() {
         Log.d(TAG, "getTelemetryData: ")
         getPositionData()
@@ -171,6 +235,10 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         getSpeed()
     }
 
+    /**
+     * This function gets [drone] position data.
+     * Altitude, Latitude, Longitude comes from here.
+     * */
     private fun getPositionData() {
         Log.d(TAG, "getPositionData: ")
         viewModelScope.launch(Dispatchers.Main) {
@@ -188,6 +256,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         }
     }
 
+    /**
+     * This function gets [drone] flight mode.
+     * */
     private fun getFlightMode() {
         Log.d(TAG, "getFlightMode: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -203,6 +274,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         }
     }
 
+    /**
+     * This function gets [drone] armed/disarmed value.
+     * */
     private fun getArmedValue() {
         Log.d(TAG, "getArmedValue: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -218,6 +292,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         }
     }
 
+    /**
+     * This function gets number of satellites the [drone] is picking up.
+     * */
     private fun getGpsData() {
         Log.d(TAG, "getGpsData: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -232,6 +309,9 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
         }
     }
 
+    /**
+     * This function gets the [drone] battery percentage to display on the UI.
+     * */
     private fun getBatteryData() {
         Log.d(TAG, "getBatteryData: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -241,13 +321,15 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
                 },
                 { error ->
                     Log.e(TAG, "Error in battery telemetry subscription", error)
-
                 }
             )
         }
 
     }
 
+    /**
+     * This function gets the speed of the [drone] to display on the UI.
+     * */
     private fun getSpeed() {
         Log.d(TAG, "getSpeed: ")
         viewModelScope.launch(Dispatchers.IO) {
