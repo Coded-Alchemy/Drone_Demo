@@ -146,6 +146,12 @@ fun TakeOffLandButtons(viewModel: ControlScreenViewModel) {
         }
 
         ElevatedButton(onClick = {
+            viewModel.orbit()
+        }) {
+            Text(stringResource(id = R.string.btn_orbit))
+        }
+
+        ElevatedButton(onClick = {
             viewModel.land()
         }) {
             Text(stringResource(id = R.string.btn_land))
