@@ -41,9 +41,18 @@ class MainActivity : ComponentActivity() {
      * */
     override fun onStop() {
         Log.d(TAG, "onStop: ")
-        droneRepository.drone.dispose()
-        serverRepository.mavServer().stop()
-        serverRepository.mavServer().destroy()
+        releaseResources()
         super.onStop()
+    }
+
+    private fun releaseResources() {
+        Log.d(TAG, "releaseResources: ")
+        try {
+            droneRepository.drone.dispose()
+            serverRepository.mavServer().stop()
+            serverRepository.mavServer().destroy()
+        } catch (e: Exception) {
+            Log.w(TAG, "releaseResources: Things have not been instantiated yet.")
+        }
     }
 }
