@@ -2,9 +2,11 @@ package coded.alchemy.dronedemo.ui.control
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -13,16 +15,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import coded.alchemy.dronedemo.R
 import coded.alchemy.dronedemo.util.appendMph
 import coded.alchemy.dronedemo.util.appendPercentSign
 import coded.alchemy.dronedemo.util.calculateMphFromVelocity
 import coded.alchemy.dronedemo.util.formatToTenthsAndHundredths
 import coded.alchemy.dronedemo.util.formatToTenths
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -34,16 +47,147 @@ import org.koin.androidx.compose.koinViewModel
  * */
 @Composable
 fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TelemetryPanel(viewModel)
-        FlightButtons(viewModel)
+
+    val droneLatitude by viewModel.latitudeDegDouble.collectAsState()
+    val droneLongitude by viewModel.longitudeDegDouble.collectAsState()
+    val relativeAltitudeFloatState by viewModel.relativeAltitudeFloat.collectAsState()
+    val satelliteCountState by viewModel.satelliteCount.collectAsState()
+    val batteryPercentage by viewModel.batteryRemaining.collectAsState()
+    val droneSpeed by viewModel.speed.collectAsState()
+
+    var currentDronePosition by remember {
+        mutableStateOf(
+            LatLng(
+                droneLatitude,
+                droneLongitude
+            )
+        )
     }
+
+    ConstraintLayout {
+        val (mapCard, telemetryCard, buttonCard) = createRefs()
+
+        Card(
+            modifier =
+            Modifier
+                .padding(all = dimensionResource(id = R.dimen.default_padding))
+                .height(intrinsicSize = IntrinsicSize.Max)
+                .constrainAs(mapCard) {
+                    top.linkTo(parent.top, margin = 16.dp)
+                    bottom.linkTo(telemetryCard.top, margin = 16.dp)
+                },
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = dimensionResource(id = R.dimen.card_elevation)
+            )
+        ) {
+            val dronePosition = LatLng(droneLatitude, droneLongitude)
+            val cameraPositionState = rememberCameraPositionState {
+                position = CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 100f)
+            }
+            GoogleMap(
+                cameraPositionState = cameraPositionState
+            ) {
+                Marker(
+                    state = MarkerState(position = dronePosition),
+                    title = "Drone",
+                    snippet = "Drone Marker"
+                )
+            }
+        }
+
+
+        Card(
+            modifier =
+            Modifier
+                .padding(all = dimensionResource(id = R.dimen.default_padding))
+                .fillMaxWidth()
+                .constrainAs(telemetryCard) {
+                bottom.linkTo(buttonCard.top, margin = 16.dp)
+            },
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = dimensionResource(id = R.dimen.card_elevation)
+            )
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                ) {
+                    Text(text = "Altitude")
+                    Text("${relativeAltitudeFloatState.formatToTenths()} m")
+                }
+
+                Column(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                ) {
+                    Text(text = "Speed")
+                    Text(droneSpeed.calculateMphFromVelocity().formatToTenths().appendMph())
+                }
+
+                Column(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                ) {
+                    Text(text = "GPS")
+                    Text(satelliteCountState.toString())
+                }
+
+                Column(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                ) {
+                    Text(text = "Battery")
+                    Text(batteryPercentage.formatToTenthsAndHundredths().appendPercentSign())
+                }
+            }
+        }
+
+        Card(
+            modifier =
+            Modifier
+                .padding(all = dimensionResource(id = R.dimen.default_padding))
+                .fillMaxWidth()
+                .constrainAs(buttonCard) {
+                    bottom.linkTo(parent.bottom, margin = 16.dp)
+                },
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = dimensionResource(id = R.dimen.card_elevation)
+            )
+        ) {
+            Column(
+                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.default_padding)),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TakeOffLandButtons(viewModel)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    ElevationButtons(viewModel)
+                    DirectionalButtons(viewModel)
+                }
+            }
+        }
+
+    }
+
+
+
+
+
+
+
+//    Column(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .fillMaxHeight(),
+////        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        mapDisplay(viewModel)
+//        TelemetryPanel(viewModel)
+//        FlightButtons(viewModel)
+//    }
 }
 
 /**
@@ -52,53 +196,8 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
  * */
 @Composable
 fun TelemetryPanel(viewModel: ControlScreenViewModel) {
-    val relativeAltitudeFloatState by viewModel.relativeAltitudeFloat.collectAsState()
-    val satelliteCountState by viewModel.satelliteCount.collectAsState()
-    val batteryPercentage by viewModel.batteryRemaining.collectAsState()
-    val droneSpeed by viewModel.speed.collectAsState()
 
-    Card(
-        modifier =
-        Modifier
-            .padding(all = dimensionResource(id = R.dimen.default_padding))
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = dimensionResource(id = R.dimen.card_elevation)
-        )
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
-            ) {
-                Text(text = "Altitude")
-                Text("${relativeAltitudeFloatState.formatToTenths()} m")
-            }
 
-            Column(
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
-            ) {
-                Text(text = "Speed")
-                Text(droneSpeed.calculateMphFromVelocity().formatToTenths().appendMph())
-            }
-
-            Column(
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
-            ) {
-                Text(text = "GPS")
-                Text(satelliteCountState.toString())
-            }
-
-            Column(
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
-            ) {
-                Text(text = "Battery")
-                Text(batteryPercentage.formatToTenthsAndHundredths().appendPercentSign())
-            }
-        }
-    }
 }
 
 /**
@@ -107,29 +206,7 @@ fun TelemetryPanel(viewModel: ControlScreenViewModel) {
  * */
 @Composable
 fun FlightButtons(viewModel: ControlScreenViewModel) {
-    Card(
-        modifier =
-        Modifier
-            .padding(all = dimensionResource(id = R.dimen.default_padding))
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = dimensionResource(id = R.dimen.card_elevation)
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.default_padding)),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TakeOffLandButtons(viewModel)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                ElevationButtons(viewModel)
-                DirectionalButtons(viewModel)
-            }
-        }
-    }
+
 }
 
 /**
@@ -143,6 +220,12 @@ fun TakeOffLandButtons(viewModel: ControlScreenViewModel) {
             viewModel.takeoff()
         }) {
             Text(stringResource(id = R.string.btn_takeoff))
+        }
+
+        ElevatedButton(onClick = {
+            viewModel.orbit()
+        }) {
+            Text(stringResource(id = R.string.btn_orbit))
         }
 
         ElevatedButton(onClick = {

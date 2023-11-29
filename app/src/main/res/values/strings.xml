@@ -11,4 +11,5 @@
     <string name="btn_takeoff">Takeoff</string>
     <string name="btn_land">Land</string>
     <string name="btn_stop">Stop</string>
+    <string name="btn_orbit">Orbit</string>
 </resources>

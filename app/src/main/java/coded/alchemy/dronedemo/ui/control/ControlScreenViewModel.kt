@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
 import coded.alchemy.dronedemo.data.ServerRepository
 import io.mavsdk.System
+import io.mavsdk.action.Action
 import io.mavsdk.telemetry.Telemetry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -217,6 +218,29 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Vie
                 },
                 { error ->
                     Log.e(TAG, "moveDrone: $error", error)
+                }
+            )
+        }
+    }
+
+    /**
+     * This function is used to make the [drone] orbit on the current location.
+     * */
+    fun orbit() {
+        val radius =  50F
+        val velocity = 50F
+        val behaviour = Action.OrbitYawBehavior.HOLD_FRONT_TO_CIRCLE_CENTER
+        val lat = _latitudeDegDouble.value
+        val lon = _longitudeDegDouble.value
+        val alt = _absoluteAltitudeFloat.value.toDouble()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            drone.action.doOrbit(radius, velocity, behaviour, lat, lon, alt).subscribe(
+                {
+                    // onNext - handle the result
+                },
+                { error ->
+                    Log.e(TAG, "orbit: $error", error)
                 }
             )
         }
