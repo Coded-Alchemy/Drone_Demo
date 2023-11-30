@@ -48,7 +48,7 @@ fun ConnectionScreen(navController: NavHostController, viewModel: ConnectionScre
         if (isNetworkConnected) {
             ConnectButton(navController, viewModel)
         } else {
-            disconnectedNetworkMessage()
+            DisconnectedNetworkMessage()
         }
     }
 }
@@ -74,7 +74,7 @@ fun ConnectButton(navController: NavHostController, viewModel: ConnectionScreenV
  * [Composable] to provide a a message when wifi is needed.
  * */
 @Composable
-fun disconnectedNetworkMessage() {
+fun DisconnectedNetworkMessage() {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()

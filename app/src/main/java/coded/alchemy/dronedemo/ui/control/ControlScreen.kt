@@ -1,10 +1,12 @@
 package coded.alchemy.dronedemo.ui.control
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,7 +24,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coded.alchemy.dronedemo.R
 import coded.alchemy.dronedemo.util.appendMph
@@ -47,166 +51,124 @@ import org.koin.androidx.compose.koinViewModel
  * */
 @Composable
 fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
-
     val droneLatitude by viewModel.latitudeDegDouble.collectAsState()
     val droneLongitude by viewModel.longitudeDegDouble.collectAsState()
     val relativeAltitudeFloatState by viewModel.relativeAltitudeFloat.collectAsState()
     val satelliteCountState by viewModel.satelliteCount.collectAsState()
     val batteryPercentage by viewModel.batteryRemaining.collectAsState()
     val droneSpeed by viewModel.speed.collectAsState()
+    val isNetworkConnected by viewModel.isNetworkConnected.collectAsState()
 
-    var currentDronePosition by remember {
-        mutableStateOf(
-            LatLng(
-                droneLatitude,
-                droneLongitude
-            )
-        )
-    }
+    if (isNetworkConnected) {
+        ConstraintLayout {
+            val (mapCard, telemetryCard, buttonCard) = createRefs()
 
-    ConstraintLayout {
-        val (mapCard, telemetryCard, buttonCard) = createRefs()
-
-        Card(
-            modifier =
-            Modifier
-                .padding(all = dimensionResource(id = R.dimen.default_padding))
-                .height(intrinsicSize = IntrinsicSize.Max)
-                .constrainAs(mapCard) {
-                    top.linkTo(parent.top, margin = 16.dp)
-                    bottom.linkTo(telemetryCard.top, margin = 16.dp)
-                },
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = dimensionResource(id = R.dimen.card_elevation)
-            )
-        ) {
-            val dronePosition = LatLng(droneLatitude, droneLongitude)
-            val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 100f)
-            }
-            GoogleMap(
-                cameraPositionState = cameraPositionState
-            ) {
-                Marker(
-                    state = MarkerState(position = dronePosition),
-                    title = "Drone",
-                    snippet = "Drone Marker"
+            Card(
+                modifier =
+                Modifier
+                    .padding(all = dimensionResource(id = R.dimen.default_padding))
+                    .height(intrinsicSize = IntrinsicSize.Max)
+                    .constrainAs(mapCard) {
+                        top.linkTo(parent.top, margin = 16.dp)
+                        bottom.linkTo(telemetryCard.top, margin = 16.dp)
+                    },
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = dimensionResource(id = R.dimen.card_elevation)
                 )
-            }
-        }
-
-
-        Card(
-            modifier =
-            Modifier
-                .padding(all = dimensionResource(id = R.dimen.default_padding))
-                .fillMaxWidth()
-                .constrainAs(telemetryCard) {
-                bottom.linkTo(buttonCard.top, margin = 16.dp)
-            },
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = dimensionResource(id = R.dimen.card_elevation)
-            )
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
-                ) {
-                    Text(text = "Altitude")
-                    Text("${relativeAltitudeFloatState.formatToTenths()} m")
+                val dronePosition = LatLng(droneLatitude, droneLongitude)
+                val cameraPositionState = rememberCameraPositionState {
+                    position = CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 100f)
                 }
-
-                Column(
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                GoogleMap(
+                    cameraPositionState = cameraPositionState
                 ) {
-                    Text(text = "Speed")
-                    Text(droneSpeed.calculateMphFromVelocity().formatToTenths().appendMph())
-                }
-
-                Column(
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
-                ) {
-                    Text(text = "GPS")
-                    Text(satelliteCountState.toString())
-                }
-
-                Column(
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
-                ) {
-                    Text(text = "Battery")
-                    Text(batteryPercentage.formatToTenthsAndHundredths().appendPercentSign())
+                    Marker(
+                        state = MarkerState(position = dronePosition),
+                        title = "Drone",
+                        snippet = "Drone Marker"
+                    )
                 }
             }
-        }
 
-        Card(
-            modifier =
-            Modifier
-                .padding(all = dimensionResource(id = R.dimen.default_padding))
-                .fillMaxWidth()
-                .constrainAs(buttonCard) {
-                    bottom.linkTo(parent.bottom, margin = 16.dp)
-                },
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = dimensionResource(id = R.dimen.card_elevation)
-            )
-        ) {
-            Column(
-                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.default_padding)),
-                horizontalAlignment = Alignment.CenterHorizontally
+
+            Card(
+                modifier =
+                Modifier
+                    .padding(all = dimensionResource(id = R.dimen.default_padding))
+                    .fillMaxWidth()
+                    .constrainAs(telemetryCard) {
+                        bottom.linkTo(buttonCard.top, margin = 16.dp)
+                    },
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = dimensionResource(id = R.dimen.card_elevation)
+                )
             ) {
-                TakeOffLandButtons(viewModel)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    ElevationButtons(viewModel)
-                    DirectionalButtons(viewModel)
+                    Column(
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                    ) {
+                        Text(text = "Altitude")
+                        Text("${relativeAltitudeFloatState.formatToTenths()} m")
+                    }
+
+                    Column(
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                    ) {
+                        Text(text = "Speed")
+                        Text(droneSpeed.calculateMphFromVelocity().formatToTenths().appendMph())
+                    }
+
+                    Column(
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                    ) {
+                        Text(text = "GPS")
+                        Text(satelliteCountState.toString())
+                    }
+
+                    Column(
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                    ) {
+                        Text(text = "Battery")
+                        Text(batteryPercentage.formatToTenthsAndHundredths().appendPercentSign())
+                    }
                 }
             }
+
+            Card(
+                modifier =
+                Modifier
+                    .padding(all = dimensionResource(id = R.dimen.default_padding))
+                    .fillMaxWidth()
+                    .constrainAs(buttonCard) {
+                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                    },
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = dimensionResource(id = R.dimen.card_elevation)
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.default_padding)),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TakeOffLandButtons(viewModel)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        ElevationButtons(viewModel)
+                        DirectionalButtons(viewModel)
+                    }
+                }
+            }
+
         }
-
+    } else {
+        DisconnectedNetworkMessage()
     }
-
-
-
-
-
-
-
-//    Column(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .fillMaxHeight(),
-////        verticalArrangement = Arrangement.Center,
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//        mapDisplay(viewModel)
-//        TelemetryPanel(viewModel)
-//        FlightButtons(viewModel)
-//    }
-}
-
-/**
- * This [Composable] provides the [TelemetryPanel] responsible for displaying telemetry
- * data from a MavLink System.
- * */
-@Composable
-fun TelemetryPanel(viewModel: ControlScreenViewModel) {
-
-
-}
-
-/**
- * This [Composable] provides the [FlightButtons] responsible controlling a MavLink System.
- * it is comprised of [TakeOffLandButtons], [ElevationButtons], and [DirectionalButtons].
- * */
-@Composable
-fun FlightButtons(viewModel: ControlScreenViewModel) {
-
 }
 
 /**
@@ -300,5 +262,23 @@ fun DirectionalButtons(viewModel: ControlScreenViewModel) {
         }) {
             Text(stringResource(id = R.string.btn_backward))
         }
+    }
+}
+
+/**
+ * [Composable] to provide a a message when wifi is needed.
+ * */
+@Composable
+fun DisconnectedNetworkMessage() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Text(
+            text = "Wifi is needed to connect to drone.",
+            fontSize = 25.sp,
+            fontWeight = FontWeight.W700,
+            modifier = Modifier.padding(10.dp)
+        )
     }
 }

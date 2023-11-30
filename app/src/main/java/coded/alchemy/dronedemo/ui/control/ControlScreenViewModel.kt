@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
 import coded.alchemy.dronedemo.data.ServerRepository
+import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import io.mavsdk.System
 import io.mavsdk.action.Action
 import io.mavsdk.telemetry.Telemetry
@@ -38,7 +39,7 @@ import kotlinx.coroutines.launch
  * @author Taji Abdullah
  * TODO: Improve this class by introducing UseCase classes to abstract business logic.
  * */
-class ControlScreenViewModel(private val droneRepository: DroneRepository) : ViewModel() {
+class ControlScreenViewModel(private val droneRepository: DroneRepository) : DroneDemoViewModel() {
     private val TAG = this.javaClass.simpleName
     private val drone = droneRepository.drone
 
