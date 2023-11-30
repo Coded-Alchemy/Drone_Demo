@@ -1,14 +1,11 @@
 package coded.alchemy.dronedemo.ui.connection
 
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
 import coded.alchemy.dronedemo.data.ServerRepository
+import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import io.mavsdk.System
-import io.mavsdk.telemetry.Telemetry
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +17,7 @@ import kotlinx.coroutines.launch
  * This class contains the drone connection logic.
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @param serverRepository [ServerRepository] gives access to [ServerRepository.mavServer].
- * @property isConnected [Boolean] observable by [StateFlow] to expose [_isConnected] value
+ * @property isDroneConnected [Boolean] observable by [StateFlow] to expose [_isDroneConnected] value
  * to determine if a [System] is connected.
  * @author Taji Abdullah
  * TODO: Improve this class by introducing a UseCase class.
@@ -28,10 +25,10 @@ import kotlinx.coroutines.launch
 class ConnectionScreenViewModel(
     private val droneRepository: DroneRepository,
     private val serverRepository: ServerRepository
-) : ViewModel() {
+) : DroneDemoViewModel() {
     private val TAG = this.javaClass.simpleName
-    private val _isConnected = MutableStateFlow<Boolean?>(false)
-    val isConnected: StateFlow<Boolean?> get() = _isConnected
+    private val _isDroneConnected = MutableStateFlow<Boolean?>(false)
+    val isDroneConnected: StateFlow<Boolean?> get() = _isDroneConnected
 
     fun connect() {
         Log.d(TAG, "connect: ")
@@ -39,10 +36,10 @@ class ConnectionScreenViewModel(
             try {
                 val port = serverRepository.mavServer().run()
                 droneRepository.drone = System(serverRepository.host, port)
-                _isConnected.emit(true)
+                _isDroneConnected.emit(true)
             } catch (exception: Exception) {
                 Log.e(TAG, exception.toString())
-                _isConnected.emit(false)
+                _isDroneConnected.emit(false)
                 serverRepository.mavServer().stop()
                 serverRepository.mavServer().destroy()
             }
