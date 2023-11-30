@@ -31,6 +31,7 @@ This application connects to and controls a Mavlink drone running PX4 in a simul
 - Koin (Dependency Injection)
 - Mavlink SDK
 - Kotlin StateFlow
+- Google Maps
 
 ---
 
@@ -43,6 +44,7 @@ downloaded from [here](https://developer.android.com/studio/).
 
 #### QGround Control
 
-#### Docker
+#### Docker  
+[Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 #### Simulation Environment

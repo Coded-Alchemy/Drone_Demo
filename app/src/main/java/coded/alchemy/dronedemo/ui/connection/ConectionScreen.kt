@@ -12,6 +12,8 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -32,12 +34,23 @@ import org.koin.androidx.compose.koinViewModel
  * */
 @Composable
 fun ConnectionScreen(navController: NavHostController, viewModel: ConnectionScreenViewModel = koinViewModel()) {
+    val screenState by viewModel.initiateDroneConnection().collectAsState(initial = ConnectionState.Default)
+
+
     Column(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ConnectButton(navController, viewModel)
+        when (screenState) {
+            is ConnectionState.Default -> ConnectButton(viewModel)
+            is ConnectionState.Connecting -> ProgressView()
+            is ConnectionState.Connected -> navController.navigate(Route.CONTROL_SCREEN)
+            is ConnectionState.Error -> {}
+        }
+
     }
 }
 
@@ -46,13 +59,9 @@ fun ConnectionScreen(navController: NavHostController, viewModel: ConnectionScre
  * TODO: enhance with screen state functionality to remedy the double tap needed to navigate away.
  * */
 @Composable
-fun ConnectButton(navController: NavHostController, viewModel: ConnectionScreenViewModel) {
+fun ConnectButton(viewModel: ConnectionScreenViewModel) {
     ElevatedButton(onClick = {
-        viewModel.connect()
-        when (viewModel.isConnected.value) {
-            true -> navController.navigate(Route.CONTROL_SCREEN)
-            else -> {}
-        }
+        viewModel.buttonClicked = true
     }) {
         Text(stringResource(id = R.string.btn_connect))
     }
