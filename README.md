@@ -50,6 +50,14 @@ downloaded from [here](https://developer.android.com/studio/).
 
 [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
+#### Google Maps API Key
+
+Place your key in the local.properties file like this:
+
+```
+MAPS_API_KEY=<your key>
+```
+
 #### QGround Control
 
 This is optional if you want to see the drone moving in the simulated environment. The app work will without this. [Download here]([Download and Install · QGroundControl User Guide](https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html))
@@ -58,14 +66,14 @@ This is optional if you want to see the drone moving in the simulated environmen
 
 ## Setup
 
-- After installing Docker
+- After installing Docker, run it.
 
 - Ensure host machine and Android device are both on the same wifi network.
 
 - From the terminal of the host machine run:
 
   ```
-  docker run --rm -it jonasvautherin/px4-gazebo-headless:1.14.0 <phone ip address>  
+  docker run --rm -it jonasvautherin/px4-gazebo-headless:1.14.0 <phone ip address>    
   ```
 
 - While thats running Install the app on the Android device. When both are completed the app should be able to connect to the drone in the simulated environment.
@@ -78,7 +86,6 @@ This is optional if you want to see the drone moving in the simulated environmen
 **To connect to the drone:**
 
 - Click the connect drone button twice, give a short pause before the second click.
-
 
 **To fly the drone:**
 
@@ -119,6 +126,8 @@ This app has been tested on a OnePlus 9. There may be some unknown defects with 
 - The map wont automatically relocate its camera position to view the Drone marker. Manual scrolling north from its current position is needed. Zooming out via the negative button is suggested to faster locate the drone marker placed on the map.
 
 - exception messages are not surfaced to the user yet.
+
+- The app currently wont recover from weird drone states.
 
 
 ---
