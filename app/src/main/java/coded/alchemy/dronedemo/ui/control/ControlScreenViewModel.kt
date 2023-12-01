@@ -195,14 +195,13 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
 
     /**
      * This function is used to stop the [drone] from moving.
-     * TODO: altitude needs a tweak to prevent making the drone drop altitude.
      * */
     fun stop() {
         Log.d(TAG, "stop: ")
         moveDrone(
             latitude = _latitudeDegDouble.value,
             longitude = _longitudeDegDouble.value,
-            altitude = _relativeAltitudeFloat.value,
+            altitude = _absoluteAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -266,7 +265,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
      * */
     private fun getPositionData() {
         Log.d(TAG, "getPositionData: ")
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.Default) {
             droneRepository.drone.telemetry.position
                 .subscribe(
                     { position: Telemetry.Position ->

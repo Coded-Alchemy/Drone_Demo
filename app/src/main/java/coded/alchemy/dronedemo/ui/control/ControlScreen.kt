@@ -213,12 +213,11 @@ fun ElevationButtons(viewModel: ControlScreenViewModel) {
         }
 
         // TODO: Fix stop functionality: altitude throws it off.
-        /*ElevatedButton(onClick = {
-            viewModel.stopDrone = true
+        ElevatedButton(onClick = {
             viewModel.stop()
         }) {
             Text(stringResource(id = R.string.btn_stop))
-        }*/
+        }
 
         ElevatedButton(onClick = {
             viewModel.moveDown()
