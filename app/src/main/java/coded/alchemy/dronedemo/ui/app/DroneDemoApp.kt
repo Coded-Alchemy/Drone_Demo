@@ -2,17 +2,13 @@ package coded.alchemy.dronedemo.ui.app
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import coded.alchemy.dronedemo.data.DroneRepository
-import coded.alchemy.dronedemo.data.ServerRepository
 import coded.alchemy.dronedemo.di.appModule
-import coded.alchemy.dronedemo.ui.connection.ConnectionScreen
 import coded.alchemy.dronedemo.ui.navigation.DroneDemoNavHost
 import org.koin.compose.KoinApplication
 
@@ -23,7 +19,6 @@ import org.koin.compose.KoinApplication
  * Koin Dependency injection is instantiated here.
  * @author Taji Abdullah
  * */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DroneDemoApp() {
     KoinApplication(application = {
@@ -36,7 +31,10 @@ fun DroneDemoApp() {
             color = MaterialTheme.colorScheme.background
         ) {
             Scaffold { innerPadding ->
-                DroneDemoNavHost(navController = navController, modifier = Modifier.padding(innerPadding))
+                DroneDemoNavHost(
+                    navController = navController,
+                    modifier = Modifier.padding(innerPadding)
+                )
             }
         }
     }

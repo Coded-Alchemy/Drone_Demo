@@ -9,7 +9,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coded.alchemy.dronedemo.ui.connection.ConnectionScreen
 import coded.alchemy.dronedemo.ui.control.ControlScreen
-import coded.alchemy.dronedemo.ui.navigation.Route.CAN_NAVIGATE
 
 /**
  * Navigation.kt

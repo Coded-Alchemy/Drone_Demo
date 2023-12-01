@@ -64,7 +64,11 @@ class MainActivity : ComponentActivity() {
      * */
     private fun setUpNetworkMonitoring() {
         Log.d(TAG, "setUpNetworkMonitoring: ")
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-        connectivityManager?.requestNetwork(NetworkMonitor.networkRequest, NetworkMonitor.networkCallback)
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        connectivityManager?.requestNetwork(
+            NetworkMonitor.networkRequest,
+            NetworkMonitor.networkCallback
+        )
     }
 }
