@@ -1,16 +1,13 @@
 package coded.alchemy.dronedemo.ui.control
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
-import coded.alchemy.dronedemo.data.ServerRepository
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
-import io.mavsdk.System
 import io.mavsdk.action.Action
+import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -58,7 +55,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
     private val _flightMode = MutableStateFlow("")
     val flightMode: StateFlow<String> = _flightMode
 
-    private val _satelliteCount = MutableStateFlow(0)
+    private val _satelliteCount = MutableStateFlow(Int.MIN_VALUE)
     val satelliteCount: StateFlow<Int> = _satelliteCount
 
     private val _batteryRemaining = MutableStateFlow(Float.MIN_VALUE)
@@ -86,7 +83,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
                     // onNext - handle the result
                 },
                 { error ->
-                    Log.e(TAG, "takeoff: ", error)
+                    Log.e(TAG, "takeoff: $error", error)
                 }
             )
         }
@@ -227,7 +224,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
      * This function is used to make the [drone] orbit on the current location.
      * */
     fun orbit() {
-        val radius =  50F
+        val radius = 50F
         val velocity = 50F
         val behaviour = Action.OrbitYawBehavior.HOLD_FRONT_TO_CIRCLE_CENTER
         val lat = _latitudeDegDouble.value
@@ -247,7 +244,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
     }
 
     /**
-     * This function starts the observation of ths [drone] telemetry data.
+     * This function starts the observation of the [drone] telemetry data.
      * */
     private fun getTelemetryData() {
         Log.d(TAG, "getTelemetryData: ")
@@ -266,17 +263,21 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
     private fun getPositionData() {
         Log.d(TAG, "getPositionData: ")
         viewModelScope.launch(Dispatchers.Default) {
-            droneRepository.drone.telemetry.position
-                .subscribe(
-                    { position: Telemetry.Position ->
-                        _relativeAltitudeFloat.value = position.relativeAltitudeM
-                        _absoluteAltitudeFloat.value = position.absoluteAltitudeM
-                        _latitudeDegDouble.value = position.latitudeDeg
-                        _longitudeDegDouble.value = position.longitudeDeg
-                    },
-                    { error ->
-                        Log.e(TAG, "Error in position telemetry subscription", error)
-                    })
+            try {
+                droneRepository.drone.telemetry.position
+                    .subscribe(
+                        { position: Telemetry.Position ->
+                            _relativeAltitudeFloat.value = position.relativeAltitudeM
+                            _absoluteAltitudeFloat.value = position.absoluteAltitudeM
+                            _latitudeDegDouble.value = position.latitudeDeg
+                            _longitudeDegDouble.value = position.longitudeDeg
+                        },
+                        { error ->
+                            Log.e(TAG, "Error in position telemetry subscription $error", error)
+                        })
+            } catch (e: Exception) {
+                Log.e(TAG, "getPositionData: $e")
+            }
         }
     }
 
@@ -293,7 +294,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
                         _flightMode.value = flightMode.toString()
                     },
                     { error ->
-                        Log.e(TAG, "Error in flight mode telemetry subscription", error)
+                        Log.e(TAG, "Error in flight mode telemetry subscription $error", error)
                     })
         }
     }
@@ -310,7 +311,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
                         Log.d(TAG, "armed: $armed")
                     },
                     { error ->
-                        Log.e(TAG, "Error in armed telemetry subscription", error)
+                        Log.e(TAG, "Error in armed telemetry subscription $error", error)
                     }
                 )
         }
@@ -327,7 +328,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
                     _satelliteCount.value = gpsInfo.numSatellites
                 },
                 { error ->
-                    Log.e(TAG, "Error in GPS telemetry subscription", error)
+                    Log.e(TAG, "Error in GPS telemetry subscription $error", error)
                 }
             )
         }
@@ -344,7 +345,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
                     _batteryRemaining.value = battery.remainingPercent
                 },
                 { error ->
-                    Log.e(TAG, "Error in battery telemetry subscription", error)
+                    Log.e(TAG, "Error in battery telemetry subscription $error", error)
                 }
             )
         }
@@ -358,11 +359,11 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
         Log.d(TAG, "getSpeed: ")
         viewModelScope.launch(Dispatchers.IO) {
             droneRepository.drone.telemetry.rawGps.subscribe(
-                {  metrics: Telemetry.RawGps ->
+                { metrics: Telemetry.RawGps ->
                     _speed.value = metrics.velocityMS
                 },
                 { error ->
-                    Log.e(TAG, "Error in fixedwingMetrics telemetry subscription", error)
+                    Log.e(TAG, "Error in raw GPS subscription $error", error)
                 }
             )
         }

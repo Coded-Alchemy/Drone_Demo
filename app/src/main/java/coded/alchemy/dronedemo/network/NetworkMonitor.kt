@@ -49,7 +49,8 @@ object NetworkMonitor {
         ) {
             super.onCapabilitiesChanged(network, networkCapabilities)
             Log.i(TAG, "networkCallback: onCapabilitiesChanged $network")
-            val unmetered = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+            val unmetered =
+                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
         }
 
         /**

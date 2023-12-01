@@ -31,7 +31,7 @@ class ServerRepository {
 
         fun getInstance() =
             instance ?: synchronized(this) {
-                instance ?: DroneRepository().also {  instance = it }
+                instance ?: DroneRepository().also { instance = it }
             }
     }
 }

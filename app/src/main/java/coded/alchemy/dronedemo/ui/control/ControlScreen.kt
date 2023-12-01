@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,9 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -32,8 +28,8 @@ import coded.alchemy.dronedemo.R
 import coded.alchemy.dronedemo.util.appendMph
 import coded.alchemy.dronedemo.util.appendPercentSign
 import coded.alchemy.dronedemo.util.calculateMphFromVelocity
-import coded.alchemy.dronedemo.util.formatToTenthsAndHundredths
 import coded.alchemy.dronedemo.util.formatToTenths
+import coded.alchemy.dronedemo.util.formatToTenthsAndHundredths
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -78,7 +74,8 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
             ) {
                 val dronePosition = LatLng(droneLatitude, droneLongitude)
                 val cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 100f)
+                    position =
+                        CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 100f)
                 }
                 GoogleMap(
                     cameraPositionState = cameraPositionState
@@ -212,7 +209,6 @@ fun ElevationButtons(viewModel: ControlScreenViewModel) {
             Text(stringResource(id = R.string.btn_up))
         }
 
-        // TODO: Fix stop functionality: altitude throws it off.
         ElevatedButton(onClick = {
             viewModel.stop()
         }) {
