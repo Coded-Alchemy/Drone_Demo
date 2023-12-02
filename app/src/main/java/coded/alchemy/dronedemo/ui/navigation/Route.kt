@@ -1,0 +1,7 @@
+package coded.alchemy.dronedemo.ui.navigation
+
+object Route {
+    const val CONNECTION_SCREEN = "connectionScreen"
+    const val CONTROL_SCREEN = "controlScreen"
+    var CAN_NAVIGATE = false
+}

@@ -1,58 +1,74 @@
 package coded.alchemy.dronedemo
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import coded.alchemy.dronedemo.data.DroneRepository
+import coded.alchemy.dronedemo.data.ServerRepository
+import coded.alchemy.dronedemo.network.NetworkMonitor
+import coded.alchemy.dronedemo.ui.app.DroneDemoApp
 import coded.alchemy.dronedemo.ui.theme.DroneDemoTheme
-import io.mavsdk.MavsdkEventQueue
-import io.mavsdk.mavsdkserver.MavsdkServer
+import org.koin.android.ext.android.inject
 
+/**
+ * MainActivity.kt
+ *
+ * Application entry point. This application uses Jetpack Compose for the UI.
+ * @property serverRepository is a private [ServerRepository] dependency injection.
+ * @property droneRepository is a private [DroneRepository] dependency injection.
+ * @author Taji Abdullah
+ * */
 class MainActivity : ComponentActivity() {
+    private val TAG = this.javaClass.simpleName
+
+    /**
+     * [onCreate] starts the monitoring of network connectivity.
+     * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate: ")
+        setUpNetworkMonitoring()
+    }
+
+    /**
+     * [onResume] sets up the Composable UI.
+     * */
+    override fun onResume() {
+        super.onResume()
         setContent {
             DroneDemoTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+                DroneDemoApp()
             }
         }
-
-        // Create an instance of MavsdkServer
-        val server = MavsdkServer()
-        val SYSTEM_ADDRESS = "192.168.0.24"
-        val MAVSDK_SERVER_PORT = 14540
-
-        // Use MavsdkEventQueue.executor() to get an executor and execute the server run operation
-        MavsdkEventQueue.executor().execute {
-            server.run(SYSTEM_ADDRESS, MAVSDK_SERVER_PORT)
-        }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    /**
+     * [onStop] is used to destroy resources utilizing the applications lifecycle.
+     * */
+    override fun onStop() {
+        Log.d(TAG, "onStop: ")
+        val serverRepository: ServerRepository by inject()
+        val droneRepository: DroneRepository by inject()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DroneDemoTheme {
-        Greeting("Android")
+        droneRepository.drone.dispose()
+        serverRepository.mavServer().stop()
+        serverRepository.mavServer().destroy()
+        super.onStop()
+    }
+
+    /**
+     * This function initializes the network connectivity monitoring capabilities.
+     * */
+    private fun setUpNetworkMonitoring() {
+        Log.d(TAG, "setUpNetworkMonitoring: ")
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        connectivityManager?.requestNetwork(
+            NetworkMonitor.networkRequest,
+            NetworkMonitor.networkCallback
+        )
     }
 }
