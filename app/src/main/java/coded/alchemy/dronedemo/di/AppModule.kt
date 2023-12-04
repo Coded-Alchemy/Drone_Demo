@@ -3,6 +3,7 @@ package coded.alchemy.dronedemo.di
 import coded.alchemy.dronedemo.data.DroneRepository
 import coded.alchemy.dronedemo.data.ServerRepository
 import coded.alchemy.dronedemo.domain.ConnectToDroneUseCase
+import coded.alchemy.dronedemo.domain.DroneLandUseCase
 import coded.alchemy.dronedemo.domain.DroneOrbitUseCase
 import coded.alchemy.dronedemo.domain.GetArmedValueUseCase
 import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
@@ -36,4 +37,5 @@ val appModule = module {
     single { GetPositionDataUseCase( droneRepository = get()) }
     single { MoveDroneUseCase( droneRepository = get()) }
     single { DroneOrbitUseCase( droneRepository = get()) }
+    single { DroneLandUseCase( droneRepository = get()) }
 }

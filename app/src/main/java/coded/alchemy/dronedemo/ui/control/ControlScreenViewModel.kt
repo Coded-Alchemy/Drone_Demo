@@ -3,6 +3,7 @@ package coded.alchemy.dronedemo.ui.control
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
+import coded.alchemy.dronedemo.domain.DroneLandUseCase
 import coded.alchemy.dronedemo.domain.DroneOrbitUseCase
 import coded.alchemy.dronedemo.domain.GetArmedValueUseCase
 import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
@@ -42,6 +43,7 @@ import kotlinx.coroutines.launch
  * */
 class ControlScreenViewModel(
     private val droneRepository: DroneRepository, // TODO remove this
+    private val droneLandUseCase: DroneLandUseCase,
     private val droneOrbitUseCase: DroneOrbitUseCase,
     private val moveDroneUseCase: MoveDroneUseCase,
     private val getPositionDataUseCase: GetPositionDataUseCase,
@@ -72,6 +74,7 @@ class ControlScreenViewModel(
     }
 
     override fun onCleared() {
+        droneLandUseCase.cancel()
         droneOrbitUseCase.cancel()
         moveDroneUseCase.cancel()
         getPositionDataUseCase.cancel()
@@ -105,16 +108,7 @@ class ControlScreenViewModel(
      * */
     fun land() {
         Log.d(TAG, "land: ")
-        viewModelScope.launch(Dispatchers.IO) {
-            drone.action.land().subscribe(
-                {
-                    // onNext - handle the result
-                },
-                { error ->
-                    Log.e(TAG, "land: $error", error)
-                }
-            )
-        }
+        droneLandUseCase()
     }
 
     /**
