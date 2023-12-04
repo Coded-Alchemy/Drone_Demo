@@ -8,6 +8,7 @@ import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
 import coded.alchemy.dronedemo.domain.GetDroneSpeedUseCase
 import coded.alchemy.dronedemo.domain.GetFlightModeUseCase
 import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
+import coded.alchemy.dronedemo.domain.GetPositionDataUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import io.mavsdk.action.Action
 import io.mavsdk.mission.Mission
@@ -24,12 +25,10 @@ import kotlinx.coroutines.launch
  * This class contains the drone connection logic.
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @param getBatteryPercentageUseCase [GetBatteryPercentageUseCase] provides drone battery stats.
- * @property relativeAltitudeFloat [StateFlow] [Float] that observes
- * [_relativeAltitudeFloat] to expose it publicly. This is the [drone] altitude used.
+ * @property relativeAltitudeFloat [StateFlow] [Float] that observes altitude used.
  * @property absoluteAltitudeFloat [StateFlow] [Float] that observes
  * [_absoluteAltitudeFloat] to expose it publicly. This is not currently used.
- * @property latitudeDegDouble [StateFlow] [Double] that observes
- * [_latitudeDegDouble] to expose it publicly. This is the [drone] latitude.
+ * @property latitudeDegDouble [StateFlow] [Double] that observes the [drone] latitude.
  * @property longitudeDegDouble [StateFlow] [Double] that observes
  * [_longitudeDegDouble] to expose it publicly. This is the [drone] longitude.
  * @property flightMode [StateFlow] [String] that observes
@@ -45,6 +44,7 @@ import kotlinx.coroutines.launch
  * */
 class ControlScreenViewModel(
     private val droneRepository: DroneRepository, // TODO remove this
+    private val getPositionDataUseCase: GetPositionDataUseCase,
     private val getFlightModeUseCase: GetFlightModeUseCase,
     private val getArmedValueUseCase: GetArmedValueUseCase,
     private val getGpsDataUseCase: GetGpsDataUseCase,
@@ -54,18 +54,10 @@ class ControlScreenViewModel(
     private val TAG = this.javaClass.simpleName
     private val drone = droneRepository.drone
 
-    private val _relativeAltitudeFloat = MutableStateFlow(Float.MIN_VALUE)
-    val relativeAltitudeFloat: StateFlow<Float> = _relativeAltitudeFloat
-
-    private val _absoluteAltitudeFloat = MutableStateFlow(Float.MIN_VALUE)
-    val absoluteAltitudeFloat: StateFlow<Float> = _absoluteAltitudeFloat
-
-    private val _latitudeDegDouble = MutableStateFlow(Double.MIN_VALUE)
-    val latitudeDegDouble: StateFlow<Double> = _latitudeDegDouble
-
-    private val _longitudeDegDouble = MutableStateFlow(Double.MIN_VALUE)
-    val longitudeDegDouble: StateFlow<Double> = _longitudeDegDouble
-
+    val relativeAltitudeFloat: StateFlow<Float> = getPositionDataUseCase.relativeAltitudeFloat
+    val absoluteAltitudeFloat: StateFlow<Float> = getPositionDataUseCase.absoluteAltitudeFloat
+    val latitudeDegDouble: StateFlow<Double> = getPositionDataUseCase.latitudeDegDouble
+    val longitudeDegDouble: StateFlow<Double> = getPositionDataUseCase.longitudeDegDouble
     val flightMode: StateFlow<String> = getFlightModeUseCase.flightMode
     val satelliteCount: StateFlow<Int> = getGpsDataUseCase.satelliteCount
     val batteryRemaining: StateFlow<Float> = getBatteryPercentageUseCase.batteryRemaining
@@ -80,6 +72,7 @@ class ControlScreenViewModel(
     }
 
     override fun onCleared() {
+        getPositionDataUseCase.cancel()
         getFlightModeUseCase.cancel()
         getArmedValueUseCase.cancel()
         getGpsDataUseCase.cancel()
@@ -123,14 +116,14 @@ class ControlScreenViewModel(
     }
 
     /**
-     * This function calls [moveDrone] to move the [drone] down/ascend.
+     * This function calls [moveDrone] to move the [drone] up/ascend.
      * */
     fun moveUp() {
         Log.d(TAG, "moveUp: ")
-        val newAltitude = _absoluteAltitudeFloat.value + 10.0F
+        val newAltitude = absoluteAltitudeFloat.value + 10.0F
         moveDrone(
-            latitude = _latitudeDegDouble.value,
-            longitude = _longitudeDegDouble.value,
+            latitude = latitudeDegDouble.value,
+            longitude = longitudeDegDouble.value,
             altitude = newAltitude,
             yawDegree = 0F
         )
@@ -141,10 +134,10 @@ class ControlScreenViewModel(
      * */
     fun moveDown() {
         Log.d(TAG, "moveDown: ")
-        val newAltitude = _absoluteAltitudeFloat.value - 10.0F
+        val newAltitude = absoluteAltitudeFloat.value - 10.0F
         moveDrone(
-            latitude = _latitudeDegDouble.value,
-            longitude = _longitudeDegDouble.value,
+            latitude = latitudeDegDouble.value,
+            longitude = longitudeDegDouble.value,
             altitude = newAltitude,
             yawDegree = 0F
         )
@@ -155,11 +148,11 @@ class ControlScreenViewModel(
      * */
     fun moveRight() {
         Log.d(TAG, "moveRight: ")
-        val newLongitude = _longitudeDegDouble.value + 1
+        val newLongitude = longitudeDegDouble.value + 1
         moveDrone(
-            latitude = _latitudeDegDouble.value,
+            latitude = latitudeDegDouble.value,
             longitude = newLongitude,
-            altitude = _relativeAltitudeFloat.value,
+            altitude = relativeAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -169,11 +162,11 @@ class ControlScreenViewModel(
      * */
     fun moveLeft() {
         Log.d(TAG, "moveLeft: ")
-        val newLongitude = _longitudeDegDouble.value - 1
+        val newLongitude = longitudeDegDouble.value - 1
         moveDrone(
-            latitude = _latitudeDegDouble.value,
+            latitude = latitudeDegDouble.value,
             longitude = newLongitude,
-            altitude = _relativeAltitudeFloat.value,
+            altitude = relativeAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -183,11 +176,11 @@ class ControlScreenViewModel(
      * */
     fun moveForward() {
         Log.d(TAG, "moveForward: ")
-        val newLatitude = _latitudeDegDouble.value + 1
+        val newLatitude = latitudeDegDouble.value + 1
         moveDrone(
             latitude = newLatitude,
-            longitude = _longitudeDegDouble.value,
-            altitude = _relativeAltitudeFloat.value,
+            longitude = longitudeDegDouble.value,
+            altitude = relativeAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -197,11 +190,11 @@ class ControlScreenViewModel(
      * */
     fun moveBackward() {
         Log.d(TAG, "moveBackward: ")
-        val newLatitude = _latitudeDegDouble.value - 1
+        val newLatitude = latitudeDegDouble.value - 1
         moveDrone(
             latitude = newLatitude,
-            longitude = _longitudeDegDouble.value,
-            altitude = _relativeAltitudeFloat.value,
+            longitude = longitudeDegDouble.value,
+            altitude = relativeAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -212,9 +205,9 @@ class ControlScreenViewModel(
     fun stop() {
         Log.d(TAG, "stop: ")
         moveDrone(
-            latitude = _latitudeDegDouble.value,
-            longitude = _longitudeDegDouble.value,
-            altitude = _absoluteAltitudeFloat.value,
+            latitude = latitudeDegDouble.value,
+            longitude = longitudeDegDouble.value,
+            altitude = absoluteAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -243,9 +236,9 @@ class ControlScreenViewModel(
         val radius = 50F
         val velocity = 50F
         val behaviour = Action.OrbitYawBehavior.HOLD_FRONT_TO_CIRCLE_CENTER
-        val lat = _latitudeDegDouble.value
-        val lon = _longitudeDegDouble.value
-        val alt = _absoluteAltitudeFloat.value.toDouble()
+        val lat = latitudeDegDouble.value
+        val lon = longitudeDegDouble.value
+        val alt = absoluteAltitudeFloat.value.toDouble()
 
         viewModelScope.launch(Dispatchers.IO) {
             drone.action.doOrbit(radius, velocity, behaviour, lat, lon, alt).subscribe(
@@ -264,36 +257,11 @@ class ControlScreenViewModel(
      * */
     private fun getTelemetryData() {
         Log.d(TAG, "getTelemetryData: ")
-        getPositionData()
+        getPositionDataUseCase()
         getFlightModeUseCase()
         getArmedValueUseCase()
         getGpsDataUseCase()
         getBatteryPercentageUseCase()
         getDroneSpeedUseCase()
-    }
-
-    /**
-     * This function gets [drone] position data.
-     * Altitude, Latitude, Longitude comes from here.
-     * */
-    private fun getPositionData() {
-        Log.d(TAG, "getPositionData: ")
-        viewModelScope.launch(Dispatchers.Default) {
-            try {
-                droneRepository.drone.telemetry.position
-                    .subscribe(
-                        { position: Telemetry.Position ->
-                            _relativeAltitudeFloat.value = position.relativeAltitudeM
-                            _absoluteAltitudeFloat.value = position.absoluteAltitudeM
-                            _latitudeDegDouble.value = position.latitudeDeg
-                            _longitudeDegDouble.value = position.longitudeDeg
-                        },
-                        { error ->
-                            Log.e(TAG, "Error in position telemetry subscription $error", error)
-                        })
-            } catch (e: Exception) {
-                Log.e(TAG, "getPositionData: $e")
-            }
-        }
     }
 }
