@@ -117,8 +117,6 @@ This is optional if you want to see the drone moving in the simulated environmen
 
 This app has been tested on a OnePlus 9. There may be some unknown defects with other manufactures and or devices.
 
-- At this time the connect drone needs to be clicked twice, click once then wait about 2 seconds(depending on network speeds), then click it again to navigate to the next screen.
-
 - If things are left running for a while, the app wont be able to reconnect because the port will still be in use.
 
 - The size of the map needs to be larger.
