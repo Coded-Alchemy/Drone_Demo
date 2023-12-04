@@ -39,6 +39,13 @@ fun ConnectionScreen(
     viewModel: ConnectionScreenViewModel = koinViewModel()
 ) {
     val isNetworkConnected by viewModel.isNetworkConnected.collectAsState()
+    val droneConnected by viewModel.isDroneConnected.collectAsState()
+    val isConnecting by viewModel.isDroneConnecting.collectAsState()
+
+    when (droneConnected) {
+        true -> navController.navigate(Route.CONTROL_SCREEN)
+        else -> {}
+    }
 
     Column(
         modifier = Modifier
@@ -48,7 +55,11 @@ fun ConnectionScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (isNetworkConnected) {
-            ConnectButton(navController, viewModel)
+            if (isConnecting == true) {
+                ProgressView()
+            } else {
+                ConnectButton(viewModel)
+            }
         } else {
             DisconnectedNetworkMessage()
         }
@@ -57,16 +68,11 @@ fun ConnectionScreen(
 
 /**
  * This [Composable] provides the [ElevatedButton] responsible for connecting to a MavLink System.
- * TODO: enhance with screen state functionality to remedy the double tap needed to navigate away.
  * */
 @Composable
-fun ConnectButton(navController: NavHostController, viewModel: ConnectionScreenViewModel) {
+fun ConnectButton(viewModel: ConnectionScreenViewModel) {
     ElevatedButton(onClick = {
         viewModel.connect()
-        when (viewModel.isDroneConnected.value) {
-            true -> navController.navigate(Route.CONTROL_SCREEN)
-            else -> {}
-        }
     }) {
         Text(stringResource(id = R.string.btn_connect))
     }
