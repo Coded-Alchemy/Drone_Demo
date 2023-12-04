@@ -6,6 +6,7 @@ import coded.alchemy.dronedemo.data.DroneRepository
 import coded.alchemy.dronedemo.domain.GetArmedValueUseCase
 import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
 import coded.alchemy.dronedemo.domain.GetDroneSpeedUseCase
+import coded.alchemy.dronedemo.domain.GetFlightModeUseCase
 import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import io.mavsdk.action.Action
@@ -44,6 +45,7 @@ import kotlinx.coroutines.launch
  * */
 class ControlScreenViewModel(
     private val droneRepository: DroneRepository, // TODO remove this
+    private val getFlightModeUseCase: GetFlightModeUseCase,
     private val getArmedValueUseCase: GetArmedValueUseCase,
     private val getGpsDataUseCase: GetGpsDataUseCase,
     private val getDroneSpeedUseCase: GetDroneSpeedUseCase,
@@ -64,9 +66,7 @@ class ControlScreenViewModel(
     private val _longitudeDegDouble = MutableStateFlow(Double.MIN_VALUE)
     val longitudeDegDouble: StateFlow<Double> = _longitudeDegDouble
 
-    private val _flightMode = MutableStateFlow("")
-    val flightMode: StateFlow<String> = _flightMode
-
+    val flightMode: StateFlow<String> = getFlightModeUseCase.flightMode
     val satelliteCount: StateFlow<Int> = getGpsDataUseCase.satelliteCount
     val batteryRemaining: StateFlow<Float> = getBatteryPercentageUseCase.batteryRemaining
     val speed: StateFlow<Float> = getDroneSpeedUseCase.speed
@@ -80,6 +80,7 @@ class ControlScreenViewModel(
     }
 
     override fun onCleared() {
+        getFlightModeUseCase.cancel()
         getArmedValueUseCase.cancel()
         getGpsDataUseCase.cancel()
         getDroneSpeedUseCase.cancel()
@@ -264,7 +265,7 @@ class ControlScreenViewModel(
     private fun getTelemetryData() {
         Log.d(TAG, "getTelemetryData: ")
         getPositionData()
-        getFlightMode()
+        getFlightModeUseCase()
         getArmedValueUseCase()
         getGpsDataUseCase()
         getBatteryPercentageUseCase()
@@ -293,24 +294,6 @@ class ControlScreenViewModel(
             } catch (e: Exception) {
                 Log.e(TAG, "getPositionData: $e")
             }
-        }
-    }
-
-    /**
-     * This function gets [drone] flight mode.
-     * */
-    private fun getFlightMode() {
-        Log.d(TAG, "getFlightMode: ")
-        viewModelScope.launch(Dispatchers.IO) {
-            droneRepository.drone.telemetry.flightMode.distinctUntilChanged()
-                .subscribe(
-                    { flightMode: Telemetry.FlightMode ->
-                        Log.d(TAG, "flight mode: $flightMode")
-                        _flightMode.value = flightMode.toString()
-                    },
-                    { error ->
-                        Log.e(TAG, "Error in flight mode telemetry subscription $error", error)
-                    })
         }
     }
 }

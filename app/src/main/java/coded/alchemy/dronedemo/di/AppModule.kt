@@ -6,6 +6,7 @@ import coded.alchemy.dronedemo.domain.ConnectToDroneUseCase
 import coded.alchemy.dronedemo.domain.GetArmedValueUseCase
 import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
 import coded.alchemy.dronedemo.domain.GetDroneSpeedUseCase
+import coded.alchemy.dronedemo.domain.GetFlightModeUseCase
 import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
 import coded.alchemy.dronedemo.ui.connection.ConnectionScreenViewModel
 import coded.alchemy.dronedemo.ui.control.ControlScreenViewModel
@@ -28,4 +29,5 @@ val appModule = module {
     single { GetDroneSpeedUseCase( droneRepository = get()) }
     single { GetGpsDataUseCase( droneRepository = get()) }
     single { GetArmedValueUseCase( droneRepository = get()) }
+    single { GetFlightModeUseCase( droneRepository = get()) }
 }
