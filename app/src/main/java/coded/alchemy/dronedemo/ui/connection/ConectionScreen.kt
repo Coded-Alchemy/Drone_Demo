@@ -55,7 +55,7 @@ fun ConnectionScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (isNetworkConnected) {
-            if (isConnecting == true) {
+            if (isConnecting) {
                 ProgressView()
             } else {
                 ConnectButton(viewModel)
