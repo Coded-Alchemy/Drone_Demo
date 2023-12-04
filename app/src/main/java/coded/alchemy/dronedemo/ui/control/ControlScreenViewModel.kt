@@ -3,11 +3,13 @@ package coded.alchemy.dronedemo.ui.control
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
+import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import io.mavsdk.action.Action
 import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,6 +19,7 @@ import kotlinx.coroutines.launch
  *
  * This class contains the drone connection logic.
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
+ * @param getBatteryPercentageUseCase [GetBatteryPercentageUseCase] provides drone battery stats.
  * @property relativeAltitudeFloat [StateFlow] [Float] that observes
  * [_relativeAltitudeFloat] to expose it publicly. This is the [drone] altitude used.
  * @property absoluteAltitudeFloat [StateFlow] [Float] that observes
@@ -36,7 +39,7 @@ import kotlinx.coroutines.launch
  * @author Taji Abdullah
  * TODO: Improve this class by introducing UseCase classes to abstract business logic.
  * */
-class ControlScreenViewModel(private val droneRepository: DroneRepository) : DroneDemoViewModel() {
+class ControlScreenViewModel(private val droneRepository: DroneRepository, private val getBatteryPercentageUseCase: GetBatteryPercentageUseCase) : DroneDemoViewModel() {
     private val TAG = this.javaClass.simpleName
     private val drone = droneRepository.drone
 
@@ -58,8 +61,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
     private val _satelliteCount = MutableStateFlow(Int.MIN_VALUE)
     val satelliteCount: StateFlow<Int> = _satelliteCount
 
-    private val _batteryRemaining = MutableStateFlow(Float.MIN_VALUE)
-    val batteryRemaining: StateFlow<Float> = _batteryRemaining
+    val batteryRemaining: StateFlow<Float> = getBatteryPercentageUseCase.batteryRemaining
 
     private val _speed = MutableStateFlow(Float.MIN_VALUE)
     val speed: StateFlow<Float> = _speed
@@ -70,6 +72,11 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
      * */
     init {
         getTelemetryData()
+    }
+
+    override fun onCleared() {
+        getBatteryPercentageUseCase.scope.cancel()
+        super.onCleared()
     }
 
     /**
@@ -252,7 +259,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
         getFlightMode()
         getArmedValue()
         getGpsData()
-        getBatteryData()
+        getBatteryPercentageUseCase()
         getSpeed()
     }
 
@@ -332,24 +339,6 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository) : Dro
                 }
             )
         }
-    }
-
-    /**
-     * This function gets the [drone] battery percentage to display on the UI.
-     * */
-    private fun getBatteryData() {
-        Log.d(TAG, "getBatteryData: ")
-        viewModelScope.launch(Dispatchers.IO) {
-            droneRepository.drone.telemetry.battery.distinctUntilChanged().subscribe(
-                { battery: Telemetry.Battery ->
-                    _batteryRemaining.value = battery.remainingPercent
-                },
-                { error ->
-                    Log.e(TAG, "Error in battery telemetry subscription $error", error)
-                }
-            )
-        }
-
     }
 
     /**
