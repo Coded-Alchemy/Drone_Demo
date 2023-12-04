@@ -4,9 +4,6 @@ import android.util.Log
 import coded.alchemy.dronedemo.data.DroneRepository
 import coded.alchemy.dronedemo.data.ServerRepository
 import io.mavsdk.System
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -21,9 +18,8 @@ import kotlinx.coroutines.launch
  * */
 class ConnectToDroneUseCase(private val droneRepository: DroneRepository,
                             private val serverRepository: ServerRepository
-) {
+): DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
-    private val scope = CoroutineScope(Dispatchers.IO)
     private val _isDroneConnected = MutableStateFlow<Boolean?>(false)
     val isDroneConnected: StateFlow<Boolean?> get() = _isDroneConnected
 
@@ -46,6 +42,4 @@ class ConnectToDroneUseCase(private val droneRepository: DroneRepository,
             }
         }
     }
-
-    fun cancel() = scope.cancel()
 }

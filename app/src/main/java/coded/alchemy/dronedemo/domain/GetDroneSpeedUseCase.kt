@@ -3,8 +3,6 @@ package coded.alchemy.dronedemo.domain
 import android.util.Log
 import coded.alchemy.dronedemo.data.DroneRepository
 import io.mavsdk.telemetry.Telemetry
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,7 +14,7 @@ import kotlinx.coroutines.launch
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @author Taji Abdullah
  * */
-class GetDroneSpeedUseCase(private val droneRepository: DroneRepository): BaseUseCase() {
+class GetDroneSpeedUseCase(private val droneRepository: DroneRepository): DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
     private val _speed = MutableStateFlow(Float.MIN_VALUE)
     val speed: StateFlow<Float> = _speed
