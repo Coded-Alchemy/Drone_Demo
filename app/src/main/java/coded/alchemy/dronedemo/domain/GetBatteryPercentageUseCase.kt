@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @author Taji Abdullah
  * */
-class GetBatteryPercentageUseCase(private val droneRepository: DroneRepository): DroneDemoUseCase() {
+class GetBatteryPercentageUseCase(private val droneRepository: DroneRepository) :
+    DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
     private val _batteryRemaining = MutableStateFlow(Float.MIN_VALUE)
     val batteryRemaining: StateFlow<Float> = _batteryRemaining

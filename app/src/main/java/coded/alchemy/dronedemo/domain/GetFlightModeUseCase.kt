@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @author Taji Abdullah
  * */
-class GetFlightModeUseCase(private val droneRepository: DroneRepository): DroneDemoUseCase() {
+class GetFlightModeUseCase(private val droneRepository: DroneRepository) : DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
     private val _flightMode = MutableStateFlow("")
     val flightMode: StateFlow<String> = _flightMode

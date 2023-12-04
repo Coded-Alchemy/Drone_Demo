@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @author Taji Abdullah
  * */
-class GetDroneSpeedUseCase(private val droneRepository: DroneRepository): DroneDemoUseCase() {
+class GetDroneSpeedUseCase(private val droneRepository: DroneRepository) : DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
     private val _speed = MutableStateFlow(Float.MIN_VALUE)
     val speed: StateFlow<Float> = _speed

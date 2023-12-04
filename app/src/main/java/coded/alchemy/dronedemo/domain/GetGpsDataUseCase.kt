@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @author Taji Abdullah
  * */
-class GetGpsDataUseCase(private val droneRepository: DroneRepository): DroneDemoUseCase() {
+class GetGpsDataUseCase(private val droneRepository: DroneRepository) : DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
     private val _satelliteCount = MutableStateFlow(Int.MIN_VALUE)
     val satelliteCount: StateFlow<Int> = _satelliteCount

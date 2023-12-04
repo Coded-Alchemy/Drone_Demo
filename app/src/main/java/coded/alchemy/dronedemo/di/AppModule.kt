@@ -29,15 +29,15 @@ val appModule = module {
     viewModelOf(::ControlScreenViewModel)
     single { DroneRepository() }
     single { ServerRepository() }
-    single { ConnectToDroneUseCase( serverRepository = get(), droneRepository = get()) }
-    single { GetBatteryPercentageUseCase( droneRepository = get()) }
-    single { GetDroneSpeedUseCase( droneRepository = get()) }
-    single { GetGpsDataUseCase( droneRepository = get()) }
-    single { GetArmedValueUseCase( droneRepository = get()) }
-    single { GetFlightModeUseCase( droneRepository = get()) }
-    single { GetPositionDataUseCase( droneRepository = get()) }
-    single { MoveDroneUseCase( droneRepository = get()) }
-    single { DroneOrbitUseCase( droneRepository = get()) }
-    single { DroneLandUseCase( droneRepository = get()) }
-    single { DroneTakeOffUseCase( droneRepository = get()) }
+    single { ConnectToDroneUseCase(serverRepository = get(), droneRepository = get()) }
+    single { GetBatteryPercentageUseCase(droneRepository = get()) }
+    single { GetDroneSpeedUseCase(droneRepository = get()) }
+    single { GetGpsDataUseCase(droneRepository = get()) }
+    single { GetArmedValueUseCase(droneRepository = get()) }
+    single { GetFlightModeUseCase(droneRepository = get()) }
+    single { GetPositionDataUseCase(droneRepository = get()) }
+    single { MoveDroneUseCase(droneRepository = get()) }
+    single { DroneOrbitUseCase(droneRepository = get()) }
+    single { DroneLandUseCase(droneRepository = get()) }
+    single { DroneTakeOffUseCase(droneRepository = get()) }
 }

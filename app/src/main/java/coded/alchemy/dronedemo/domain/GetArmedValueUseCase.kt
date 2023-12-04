@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @author Taji Abdullah
  * */
-class GetArmedValueUseCase(private val droneRepository: DroneRepository): DroneDemoUseCase() {
+class GetArmedValueUseCase(private val droneRepository: DroneRepository) : DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
 
     operator fun invoke() {

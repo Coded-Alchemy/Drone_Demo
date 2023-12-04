@@ -16,9 +16,10 @@ import kotlinx.coroutines.launch
  * @param serverRepository [ServerRepository] gives access to [ServerRepository.mavServer]
  * @author Taji Abdullah
  * */
-class ConnectToDroneUseCase(private val droneRepository: DroneRepository,
-                            private val serverRepository: ServerRepository
-): DroneDemoUseCase() {
+class ConnectToDroneUseCase(
+    private val droneRepository: DroneRepository,
+    private val serverRepository: ServerRepository
+) : DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
     private val _isDroneConnected = MutableStateFlow<Boolean?>(false)
     val isDroneConnected: StateFlow<Boolean?> get() = _isDroneConnected

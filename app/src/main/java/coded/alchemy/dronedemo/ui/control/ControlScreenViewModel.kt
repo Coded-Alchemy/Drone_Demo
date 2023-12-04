@@ -1,7 +1,6 @@
 package coded.alchemy.dronedemo.ui.control
 
 import android.util.Log
-import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
 import coded.alchemy.dronedemo.domain.DroneLandUseCase
 import coded.alchemy.dronedemo.domain.DroneOrbitUseCase
@@ -15,9 +14,7 @@ import coded.alchemy.dronedemo.domain.GetPositionDataUseCase
 import coded.alchemy.dronedemo.domain.MoveDroneUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import io.mavsdk.action.Action
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 /**
  * ControlScreenViewModel.kt
@@ -40,7 +37,6 @@ import kotlinx.coroutines.launch
  * @property speed [StateFlow] [Float] that observes
  * [_speed] to expose it publicly. This is the [drone] velocity.
  * @author Taji Abdullah
- * TODO: Improve this class by introducing UseCase classes to abstract business logic.
  * */
 class ControlScreenViewModel(
     private val droneTakeOffUseCase: DroneTakeOffUseCase,

@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @author Taji Abdullah
  * */
-class GetPositionDataUseCase(private val droneRepository: DroneRepository): DroneDemoUseCase() {
+class GetPositionDataUseCase(private val droneRepository: DroneRepository) : DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
     private val _relativeAltitudeFloat = MutableStateFlow(Float.MIN_VALUE)
     val relativeAltitudeFloat: StateFlow<Float> = _relativeAltitudeFloat

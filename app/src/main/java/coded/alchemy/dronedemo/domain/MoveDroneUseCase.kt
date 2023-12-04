@@ -11,20 +11,21 @@ import kotlinx.coroutines.launch
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @author Taji Abdullah
  * */
-class MoveDroneUseCase(private val droneRepository: DroneRepository): DroneDemoUseCase() {
+class MoveDroneUseCase(private val droneRepository: DroneRepository) : DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
 
     operator fun invoke(latitude: Double, longitude: Double, altitude: Float, yawDegree: Float) {
         Log.d(TAG, "invoke: ")
         scope.launch {
-            droneRepository.drone.action.gotoLocation(latitude, longitude, altitude, yawDegree).subscribe(
-                {
-                    // onNext - handle the result
-                },
-                { error ->
-                    Log.e(TAG, "moveDrone: $error", error)
-                }
-            )
+            droneRepository.drone.action.gotoLocation(latitude, longitude, altitude, yawDegree)
+                .subscribe(
+                    {
+                        // onNext - handle the result
+                    },
+                    { error ->
+                        Log.e(TAG, "moveDrone: $error", error)
+                    }
+                )
         }
     }
 }
