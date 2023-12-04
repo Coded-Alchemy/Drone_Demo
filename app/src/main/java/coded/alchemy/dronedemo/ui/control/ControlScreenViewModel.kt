@@ -9,13 +9,10 @@ import coded.alchemy.dronedemo.domain.GetDroneSpeedUseCase
 import coded.alchemy.dronedemo.domain.GetFlightModeUseCase
 import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
 import coded.alchemy.dronedemo.domain.GetPositionDataUseCase
+import coded.alchemy.dronedemo.domain.MoveDroneUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import io.mavsdk.action.Action
-import io.mavsdk.mission.Mission
-import io.mavsdk.telemetry.Telemetry
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -44,6 +41,7 @@ import kotlinx.coroutines.launch
  * */
 class ControlScreenViewModel(
     private val droneRepository: DroneRepository, // TODO remove this
+    private val moveDroneUseCase: MoveDroneUseCase,
     private val getPositionDataUseCase: GetPositionDataUseCase,
     private val getFlightModeUseCase: GetFlightModeUseCase,
     private val getArmedValueUseCase: GetArmedValueUseCase,
@@ -72,6 +70,7 @@ class ControlScreenViewModel(
     }
 
     override fun onCleared() {
+        moveDroneUseCase.cancel()
         getPositionDataUseCase.cancel()
         getFlightModeUseCase.cancel()
         getArmedValueUseCase.cancel()
@@ -121,7 +120,7 @@ class ControlScreenViewModel(
     fun moveUp() {
         Log.d(TAG, "moveUp: ")
         val newAltitude = absoluteAltitudeFloat.value + 10.0F
-        moveDrone(
+        moveDroneUseCase(
             latitude = latitudeDegDouble.value,
             longitude = longitudeDegDouble.value,
             altitude = newAltitude,
@@ -135,7 +134,7 @@ class ControlScreenViewModel(
     fun moveDown() {
         Log.d(TAG, "moveDown: ")
         val newAltitude = absoluteAltitudeFloat.value - 10.0F
-        moveDrone(
+        moveDroneUseCase(
             latitude = latitudeDegDouble.value,
             longitude = longitudeDegDouble.value,
             altitude = newAltitude,
@@ -149,7 +148,7 @@ class ControlScreenViewModel(
     fun moveRight() {
         Log.d(TAG, "moveRight: ")
         val newLongitude = longitudeDegDouble.value + 1
-        moveDrone(
+        moveDroneUseCase(
             latitude = latitudeDegDouble.value,
             longitude = newLongitude,
             altitude = relativeAltitudeFloat.value,
@@ -163,7 +162,7 @@ class ControlScreenViewModel(
     fun moveLeft() {
         Log.d(TAG, "moveLeft: ")
         val newLongitude = longitudeDegDouble.value - 1
-        moveDrone(
+        moveDroneUseCase(
             latitude = latitudeDegDouble.value,
             longitude = newLongitude,
             altitude = relativeAltitudeFloat.value,
@@ -177,7 +176,7 @@ class ControlScreenViewModel(
     fun moveForward() {
         Log.d(TAG, "moveForward: ")
         val newLatitude = latitudeDegDouble.value + 1
-        moveDrone(
+        moveDroneUseCase(
             latitude = newLatitude,
             longitude = longitudeDegDouble.value,
             altitude = relativeAltitudeFloat.value,
@@ -191,7 +190,7 @@ class ControlScreenViewModel(
     fun moveBackward() {
         Log.d(TAG, "moveBackward: ")
         val newLatitude = latitudeDegDouble.value - 1
-        moveDrone(
+        moveDroneUseCase(
             latitude = newLatitude,
             longitude = longitudeDegDouble.value,
             altitude = relativeAltitudeFloat.value,
@@ -204,29 +203,12 @@ class ControlScreenViewModel(
      * */
     fun stop() {
         Log.d(TAG, "stop: ")
-        moveDrone(
+        moveDroneUseCase(
             latitude = latitudeDegDouble.value,
             longitude = longitudeDegDouble.value,
             altitude = absoluteAltitudeFloat.value,
             yawDegree = 0F
         )
-    }
-
-    /**
-     * This function is used to move the [drone] in various directions.
-     * */
-    private fun moveDrone(latitude: Double, longitude: Double, altitude: Float, yawDegree: Float) {
-        Log.d(TAG, "moveDrone: ")
-        viewModelScope.launch(Dispatchers.IO) {
-            drone.action.gotoLocation(latitude, longitude, altitude, yawDegree).subscribe(
-                {
-                    // onNext - handle the result
-                },
-                { error ->
-                    Log.e(TAG, "moveDrone: $error", error)
-                }
-            )
-        }
     }
 
     /**
