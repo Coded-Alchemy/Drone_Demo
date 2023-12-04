@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
 import coded.alchemy.dronedemo.domain.DroneLandUseCase
 import coded.alchemy.dronedemo.domain.DroneOrbitUseCase
+import coded.alchemy.dronedemo.domain.DroneTakeOffUseCase
 import coded.alchemy.dronedemo.domain.GetArmedValueUseCase
 import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
 import coded.alchemy.dronedemo.domain.GetDroneSpeedUseCase
@@ -42,7 +43,7 @@ import kotlinx.coroutines.launch
  * TODO: Improve this class by introducing UseCase classes to abstract business logic.
  * */
 class ControlScreenViewModel(
-    private val droneRepository: DroneRepository, // TODO remove this
+    private val droneTakeOffUseCase: DroneTakeOffUseCase,
     private val droneLandUseCase: DroneLandUseCase,
     private val droneOrbitUseCase: DroneOrbitUseCase,
     private val moveDroneUseCase: MoveDroneUseCase,
@@ -54,8 +55,6 @@ class ControlScreenViewModel(
     private val getBatteryPercentageUseCase: GetBatteryPercentageUseCase
 ) : DroneDemoViewModel() {
     private val TAG = this.javaClass.simpleName
-    private val drone = droneRepository.drone // TODO remove this
-
     val relativeAltitudeFloat: StateFlow<Float> = getPositionDataUseCase.relativeAltitudeFloat
     val absoluteAltitudeFloat: StateFlow<Float> = getPositionDataUseCase.absoluteAltitudeFloat
     val latitudeDegDouble: StateFlow<Double> = getPositionDataUseCase.latitudeDegDouble
@@ -70,10 +69,16 @@ class ControlScreenViewModel(
      * the telemetry data.
      * */
     init {
-        getTelemetryData()
+        getPositionDataUseCase()
+        getFlightModeUseCase()
+        getArmedValueUseCase()
+        getGpsDataUseCase()
+        getBatteryPercentageUseCase()
+        getDroneSpeedUseCase()
     }
 
     override fun onCleared() {
+        droneTakeOffUseCase.cancel()
         droneLandUseCase.cancel()
         droneOrbitUseCase.cancel()
         moveDroneUseCase.cancel()
@@ -91,16 +96,7 @@ class ControlScreenViewModel(
      * */
     fun takeoff() {
         Log.d(TAG, "takeoff: ")
-        viewModelScope.launch(Dispatchers.IO) {
-            drone.action.arm().andThen(drone.action.takeoff()).subscribe(
-                {
-                    // onNext - handle the result
-                },
-                { error ->
-                    Log.e(TAG, "takeoff: $error", error)
-                }
-            )
-        }
+        droneTakeOffUseCase()
     }
 
     /**
@@ -220,18 +216,5 @@ class ControlScreenViewModel(
         val alt = absoluteAltitudeFloat.value.toDouble()
 
         droneOrbitUseCase(radius, velocity, behaviour, lat, lon, alt)
-    }
-
-    /**
-     * This function starts the observation of the [drone] telemetry data.
-     * */
-    private fun getTelemetryData() {
-        Log.d(TAG, "getTelemetryData: ")
-        getPositionDataUseCase()
-        getFlightModeUseCase()
-        getArmedValueUseCase()
-        getGpsDataUseCase()
-        getBatteryPercentageUseCase()
-        getDroneSpeedUseCase()
     }
 }
