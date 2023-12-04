@@ -39,7 +39,10 @@ import kotlinx.coroutines.launch
  * @author Taji Abdullah
  * TODO: Improve this class by introducing UseCase classes to abstract business logic.
  * */
-class ControlScreenViewModel(private val droneRepository: DroneRepository, private val getBatteryPercentageUseCase: GetBatteryPercentageUseCase) : DroneDemoViewModel() {
+class ControlScreenViewModel(
+    private val droneRepository: DroneRepository,
+    private val getBatteryPercentageUseCase: GetBatteryPercentageUseCase
+) : DroneDemoViewModel() {
     private val TAG = this.javaClass.simpleName
     private val drone = droneRepository.drone
 
@@ -75,7 +78,7 @@ class ControlScreenViewModel(private val droneRepository: DroneRepository, priva
     }
 
     override fun onCleared() {
-        getBatteryPercentageUseCase.scope.cancel()
+        getBatteryPercentageUseCase.cancel()
         super.onCleared()
     }
 

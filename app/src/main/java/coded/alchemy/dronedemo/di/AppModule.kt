@@ -2,6 +2,7 @@ package coded.alchemy.dronedemo.di
 
 import coded.alchemy.dronedemo.data.DroneRepository
 import coded.alchemy.dronedemo.data.ServerRepository
+import coded.alchemy.dronedemo.domain.ConnectToDroneUseCase
 import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
 import coded.alchemy.dronedemo.ui.connection.ConnectionScreenViewModel
 import coded.alchemy.dronedemo.ui.control.ControlScreenViewModel
@@ -19,5 +20,6 @@ val appModule = module {
     viewModelOf(::ControlScreenViewModel)
     single { DroneRepository() }
     single { ServerRepository() }
-    single { GetBatteryPercentageUseCase( get()) }
+    single { ConnectToDroneUseCase( serverRepository = get(), droneRepository = get()) }
+    single { GetBatteryPercentageUseCase( droneRepository = get()) }
 }
