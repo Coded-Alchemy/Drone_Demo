@@ -30,8 +30,12 @@ class ConnectionScreenViewModel(
     private val _isDroneConnected = MutableStateFlow<Boolean?>(false)
     val isDroneConnected: StateFlow<Boolean?> get() = _isDroneConnected
 
+    private val _isDroneConnecting = MutableStateFlow(false)
+    val isDroneConnecting: StateFlow<Boolean> get() = _isDroneConnecting
+
     fun connect() {
         Log.d(TAG, "connect: ")
+        _isDroneConnecting.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val port = serverRepository.mavServer().run()
