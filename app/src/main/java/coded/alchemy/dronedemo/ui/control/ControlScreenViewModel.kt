@@ -3,8 +3,10 @@ package coded.alchemy.dronedemo.ui.control
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
+import coded.alchemy.dronedemo.domain.GetArmedValueUseCase
 import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
 import coded.alchemy.dronedemo.domain.GetDroneSpeedUseCase
+import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import io.mavsdk.action.Action
 import io.mavsdk.mission.Mission
@@ -42,6 +44,8 @@ import kotlinx.coroutines.launch
  * */
 class ControlScreenViewModel(
     private val droneRepository: DroneRepository, // TODO remove this
+    private val getArmedValueUseCase: GetArmedValueUseCase,
+    private val getGpsDataUseCase: GetGpsDataUseCase,
     private val getDroneSpeedUseCase: GetDroneSpeedUseCase,
     private val getBatteryPercentageUseCase: GetBatteryPercentageUseCase
 ) : DroneDemoViewModel() {
@@ -63,9 +67,7 @@ class ControlScreenViewModel(
     private val _flightMode = MutableStateFlow("")
     val flightMode: StateFlow<String> = _flightMode
 
-    private val _satelliteCount = MutableStateFlow(Int.MIN_VALUE)
-    val satelliteCount: StateFlow<Int> = _satelliteCount
-
+    val satelliteCount: StateFlow<Int> = getGpsDataUseCase.satelliteCount
     val batteryRemaining: StateFlow<Float> = getBatteryPercentageUseCase.batteryRemaining
     val speed: StateFlow<Float> = getDroneSpeedUseCase.speed
 
@@ -78,6 +80,8 @@ class ControlScreenViewModel(
     }
 
     override fun onCleared() {
+        getArmedValueUseCase.cancel()
+        getGpsDataUseCase.cancel()
         getDroneSpeedUseCase.cancel()
         getBatteryPercentageUseCase.cancel()
         super.onCleared()
@@ -261,8 +265,8 @@ class ControlScreenViewModel(
         Log.d(TAG, "getTelemetryData: ")
         getPositionData()
         getFlightMode()
-        getArmedValue()
-        getGpsData()
+        getArmedValueUseCase()
+        getGpsDataUseCase()
         getBatteryPercentageUseCase()
         getDroneSpeedUseCase()
     }
@@ -307,41 +311,6 @@ class ControlScreenViewModel(
                     { error ->
                         Log.e(TAG, "Error in flight mode telemetry subscription $error", error)
                     })
-        }
-    }
-
-    /**
-     * This function gets [drone] armed/disarmed value.
-     * */
-    private fun getArmedValue() {
-        Log.d(TAG, "getArmedValue: ")
-        viewModelScope.launch(Dispatchers.IO) {
-            droneRepository.drone.telemetry.armed.distinctUntilChanged()
-                .subscribe(
-                    { armed: Boolean ->
-                        Log.d(TAG, "armed: $armed")
-                    },
-                    { error ->
-                        Log.e(TAG, "Error in armed telemetry subscription $error", error)
-                    }
-                )
-        }
-    }
-
-    /**
-     * This function gets number of satellites the [drone] is picking up.
-     * */
-    private fun getGpsData() {
-        Log.d(TAG, "getGpsData: ")
-        viewModelScope.launch(Dispatchers.IO) {
-            droneRepository.drone.telemetry.gpsInfo.distinctUntilChanged().subscribe(
-                { gpsInfo: Telemetry.GpsInfo ->
-                    _satelliteCount.value = gpsInfo.numSatellites
-                },
-                { error ->
-                    Log.e(TAG, "Error in GPS telemetry subscription $error", error)
-                }
-            )
         }
     }
 }
