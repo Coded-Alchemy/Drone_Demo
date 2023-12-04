@@ -3,6 +3,7 @@ package coded.alchemy.dronedemo.ui.control
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
+import coded.alchemy.dronedemo.domain.DroneOrbitUseCase
 import coded.alchemy.dronedemo.domain.GetArmedValueUseCase
 import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
 import coded.alchemy.dronedemo.domain.GetDroneSpeedUseCase
@@ -41,6 +42,7 @@ import kotlinx.coroutines.launch
  * */
 class ControlScreenViewModel(
     private val droneRepository: DroneRepository, // TODO remove this
+    private val droneOrbitUseCase: DroneOrbitUseCase,
     private val moveDroneUseCase: MoveDroneUseCase,
     private val getPositionDataUseCase: GetPositionDataUseCase,
     private val getFlightModeUseCase: GetFlightModeUseCase,
@@ -50,7 +52,7 @@ class ControlScreenViewModel(
     private val getBatteryPercentageUseCase: GetBatteryPercentageUseCase
 ) : DroneDemoViewModel() {
     private val TAG = this.javaClass.simpleName
-    private val drone = droneRepository.drone
+    private val drone = droneRepository.drone // TODO remove this
 
     val relativeAltitudeFloat: StateFlow<Float> = getPositionDataUseCase.relativeAltitudeFloat
     val absoluteAltitudeFloat: StateFlow<Float> = getPositionDataUseCase.absoluteAltitudeFloat
@@ -70,6 +72,7 @@ class ControlScreenViewModel(
     }
 
     override fun onCleared() {
+        droneOrbitUseCase.cancel()
         moveDroneUseCase.cancel()
         getPositionDataUseCase.cancel()
         getFlightModeUseCase.cancel()
@@ -222,16 +225,7 @@ class ControlScreenViewModel(
         val lon = longitudeDegDouble.value
         val alt = absoluteAltitudeFloat.value.toDouble()
 
-        viewModelScope.launch(Dispatchers.IO) {
-            drone.action.doOrbit(radius, velocity, behaviour, lat, lon, alt).subscribe(
-                {
-                    // onNext - handle the result
-                },
-                { error ->
-                    Log.e(TAG, "orbit: $error", error)
-                }
-            )
-        }
+        droneOrbitUseCase(radius, velocity, behaviour, lat, lon, alt)
     }
 
     /**
