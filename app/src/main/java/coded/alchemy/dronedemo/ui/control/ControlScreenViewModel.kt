@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.DroneRepository
 import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
+import coded.alchemy.dronedemo.domain.GetDroneSpeedUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import io.mavsdk.action.Action
 import io.mavsdk.mission.Mission
@@ -40,7 +41,8 @@ import kotlinx.coroutines.launch
  * TODO: Improve this class by introducing UseCase classes to abstract business logic.
  * */
 class ControlScreenViewModel(
-    private val droneRepository: DroneRepository,
+    private val droneRepository: DroneRepository, // TODO remove this
+    private val getDroneSpeedUseCase: GetDroneSpeedUseCase,
     private val getBatteryPercentageUseCase: GetBatteryPercentageUseCase
 ) : DroneDemoViewModel() {
     private val TAG = this.javaClass.simpleName
@@ -65,9 +67,7 @@ class ControlScreenViewModel(
     val satelliteCount: StateFlow<Int> = _satelliteCount
 
     val batteryRemaining: StateFlow<Float> = getBatteryPercentageUseCase.batteryRemaining
-
-    private val _speed = MutableStateFlow(Float.MIN_VALUE)
-    val speed: StateFlow<Float> = _speed
+    val speed: StateFlow<Float> = getDroneSpeedUseCase.speed
 
     /**
      * This function gets called when this class is instantiated to start collecting
@@ -78,6 +78,7 @@ class ControlScreenViewModel(
     }
 
     override fun onCleared() {
+        getDroneSpeedUseCase.cancel()
         getBatteryPercentageUseCase.cancel()
         super.onCleared()
     }
@@ -263,7 +264,7 @@ class ControlScreenViewModel(
         getArmedValue()
         getGpsData()
         getBatteryPercentageUseCase()
-        getSpeed()
+        getDroneSpeedUseCase()
     }
 
     /**
@@ -339,23 +340,6 @@ class ControlScreenViewModel(
                 },
                 { error ->
                     Log.e(TAG, "Error in GPS telemetry subscription $error", error)
-                }
-            )
-        }
-    }
-
-    /**
-     * This function gets the speed of the [drone] to display on the UI.
-     * */
-    private fun getSpeed() {
-        Log.d(TAG, "getSpeed: ")
-        viewModelScope.launch(Dispatchers.IO) {
-            droneRepository.drone.telemetry.rawGps.subscribe(
-                { metrics: Telemetry.RawGps ->
-                    _speed.value = metrics.velocityMS
-                },
-                { error ->
-                    Log.e(TAG, "Error in raw GPS subscription $error", error)
                 }
             )
         }
