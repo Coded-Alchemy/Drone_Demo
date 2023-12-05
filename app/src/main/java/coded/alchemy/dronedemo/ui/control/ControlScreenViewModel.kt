@@ -20,22 +20,15 @@ import kotlinx.coroutines.flow.StateFlow
  * ControlScreenViewModel.kt
  *
  * This class contains the drone connection logic.
- * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @param getBatteryPercentageUseCase [GetBatteryPercentageUseCase] provides drone battery stats.
  * @property relativeAltitudeFloat [StateFlow] [Float] that observes altitude used.
  * @property absoluteAltitudeFloat [StateFlow] [Float] that observes
- * [_absoluteAltitudeFloat] to expose it publicly. This is not currently used.
  * @property latitudeDegDouble [StateFlow] [Double] that observes the [drone] latitude.
  * @property longitudeDegDouble [StateFlow] [Double] that observes
- * [_longitudeDegDouble] to expose it publicly. This is the [drone] longitude.
  * @property flightMode [StateFlow] [String] that observes
- * [_flightMode] to expose it publicly. This is the [drone] current flight mode.
  * @property satelliteCount [StateFlow] [Int] that observes
- * [_satelliteCount] to expose it publicly. This is the [drone] satellite count.
  * @property batteryRemaining [StateFlow] [Float] that observes
- * [_batteryRemaining] to expose it publicly. This is the [drone] battery percentage.
  * @property speed [StateFlow] [Float] that observes
- * [_speed] to expose it publicly. This is the [drone] velocity.
  * @author Taji Abdullah
  * */
 class ControlScreenViewModel(
@@ -210,7 +203,6 @@ class ControlScreenViewModel(
         val lat = latitudeDegDouble.value
         val lon = longitudeDegDouble.value
         val alt = absoluteAltitudeFloat.value.toDouble()
-
         droneOrbitUseCase(radius, velocity, behaviour, lat, lon, alt)
     }
 }
