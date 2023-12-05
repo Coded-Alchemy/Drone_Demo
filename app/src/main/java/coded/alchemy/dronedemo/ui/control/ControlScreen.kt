@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -46,7 +49,7 @@ import org.koin.androidx.compose.koinViewModel
  * @author Taji Abdullah
  * */
 @Composable
-fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
+fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinViewModel()) {
     val droneLatitude by viewModel.latitudeDegDouble.collectAsState()
     val droneLongitude by viewModel.longitudeDegDouble.collectAsState()
     val relativeAltitudeFloatState by viewModel.relativeAltitudeFloat.collectAsState()
@@ -54,30 +57,30 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
     val batteryPercentage by viewModel.batteryRemaining.collectAsState()
     val droneSpeed by viewModel.speed.collectAsState()
     val isNetworkConnected by viewModel.isNetworkConnected.collectAsState()
+    val dronePosition = LatLng(droneLatitude, droneLongitude)
+    val cameraPositionState = rememberCameraPositionState {
+        position =
+            CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 18f)
+    }
 
     if (isNetworkConnected) {
-        ConstraintLayout {
+        ConstraintLayout(modifier = modifier.fillMaxHeight()) {
             val (mapCard, telemetryCard, buttonCard) = createRefs()
 
             Card(
                 modifier =
-                Modifier
+                modifier
                     .padding(all = dimensionResource(id = R.dimen.default_padding))
                     .height(intrinsicSize = IntrinsicSize.Max)
                     .constrainAs(mapCard) {
-                        top.linkTo(parent.top, margin = 16.dp)
+                        top.linkTo(parent.top, margin = 0.dp)
                         bottom.linkTo(telemetryCard.top, margin = 16.dp)
                     },
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = dimensionResource(id = R.dimen.card_elevation)
                 )
             ) {
-                val dronePosition = LatLng(droneLatitude, droneLongitude)
-                val cameraPositionState = rememberCameraPositionState {
-                    position =
-                        CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 100f)
-                }
-                GoogleMap(
+                GoogleMap(modifier = modifier.heightIn(min = 300.dp),
                     cameraPositionState = cameraPositionState
                 ) {
                     Marker(
@@ -88,10 +91,9 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
                 }
             }
 
-
             Card(
                 modifier =
-                Modifier
+                modifier
                     .padding(all = dimensionResource(id = R.dimen.default_padding))
                     .fillMaxWidth()
                     .constrainAs(telemetryCard) {
@@ -102,32 +104,32 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
                 )
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(
-                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                        modifier = modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
                     ) {
                         Text(text = "Altitude")
                         Text("${relativeAltitudeFloatState.formatToTenths()} m")
                     }
 
                     Column(
-                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                        modifier = modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
                     ) {
                         Text(text = "Speed")
                         Text(droneSpeed.calculateMphFromVelocity().formatToTenths().appendMph())
                     }
 
                     Column(
-                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                        modifier = modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
                     ) {
                         Text(text = "GPS")
                         Text(satelliteCountState.toString())
                     }
 
                     Column(
-                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                        modifier = modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
                     ) {
                         Text(text = "Battery")
                         Text(batteryPercentage.formatToTenthsAndHundredths().appendPercentSign())
@@ -137,7 +139,7 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
 
             Card(
                 modifier =
-                Modifier
+                modifier
                     .padding(all = dimensionResource(id = R.dimen.default_padding))
                     .fillMaxWidth()
                     .constrainAs(buttonCard) {
@@ -148,23 +150,23 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.default_padding)),
+                    modifier = modifier.padding(vertical = dimensionResource(id = R.dimen.default_padding)),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TakeOffLandButtons(viewModel)
+                    TakeOffLandButtons(modifier = modifier, viewModel = viewModel)
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        ElevationButtons(viewModel)
-                        DirectionalButtons(viewModel)
+                        ElevationButtons(modifier = modifier, viewModel = viewModel)
+                        DirectionalButtons(modifier = modifier, viewModel = viewModel)
                     }
                 }
             }
 
         }
     } else {
-        DisconnectedNetworkMessage()
+        DisconnectedNetworkMessage(modifier = modifier)
     }
 }
 
@@ -173,7 +175,7 @@ fun ControlScreen(viewModel: ControlScreenViewModel = koinViewModel()) {
  * landing of a MavLink System.
  * */
 @Composable
-fun TakeOffLandButtons(viewModel: ControlScreenViewModel) {
+fun TakeOffLandButtons(modifier: Modifier, viewModel: ControlScreenViewModel) {
     Row {
         ElevatedButton(onClick = {
             viewModel.takeoff()
@@ -199,7 +201,7 @@ fun TakeOffLandButtons(viewModel: ControlScreenViewModel) {
  * This [Composable] provides the [ElevationButtons] responsible for altitude of a MavLink System.
  * */
 @Composable
-fun ElevationButtons(viewModel: ControlScreenViewModel) {
+fun ElevationButtons(modifier: Modifier, viewModel: ControlScreenViewModel) {
     Column(
         verticalArrangement = Arrangement.Center
     ) {
@@ -228,7 +230,7 @@ fun ElevationButtons(viewModel: ControlScreenViewModel) {
  * backward, forward, left, and right.
  * */
 @Composable
-fun DirectionalButtons(viewModel: ControlScreenViewModel) {
+fun DirectionalButtons(modifier: Modifier, viewModel: ControlScreenViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -264,16 +266,16 @@ fun DirectionalButtons(viewModel: ControlScreenViewModel) {
  * [Composable] to provide a a message when wifi is needed.
  * */
 @Composable
-fun DisconnectedNetworkMessage() {
+fun DisconnectedNetworkMessage(modifier: Modifier) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         Text(
             text = "Wifi is needed to connect to drone.",
             fontSize = 25.sp,
             fontWeight = FontWeight.W700,
-            modifier = Modifier.padding(10.dp)
+            modifier = modifier.padding(10.dp)
         )
     }
 }

@@ -42,7 +42,7 @@ fun DroneDemoNavHost(
             ConnectionScreen(navController)
         }
         composable(route = Screen.ControlScreen.route) {
-            ControlScreen()
+            ControlScreen(modifier = modifier)
         }
     }
 }
