@@ -140,7 +140,7 @@ class ControlScreenViewModel(
         moveDroneUseCase(
             latitude = latitudeDegDouble.value,
             longitude = newLongitude,
-            altitude = relativeAltitudeFloat.value,
+            altitude = absoluteAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -154,7 +154,7 @@ class ControlScreenViewModel(
         moveDroneUseCase(
             latitude = latitudeDegDouble.value,
             longitude = newLongitude,
-            altitude = relativeAltitudeFloat.value,
+            altitude = absoluteAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -168,7 +168,7 @@ class ControlScreenViewModel(
         moveDroneUseCase(
             latitude = newLatitude,
             longitude = longitudeDegDouble.value,
-            altitude = relativeAltitudeFloat.value,
+            altitude = absoluteAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -182,7 +182,7 @@ class ControlScreenViewModel(
         moveDroneUseCase(
             latitude = newLatitude,
             longitude = longitudeDegDouble.value,
-            altitude = relativeAltitudeFloat.value,
+            altitude = absoluteAltitudeFloat.value,
             yawDegree = 0F
         )
     }
