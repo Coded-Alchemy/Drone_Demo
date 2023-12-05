@@ -140,7 +140,7 @@ class ControlScreenViewModel(
         moveDroneUseCase(
             latitude = latitudeDegDouble.value,
             longitude = newLongitude,
-            altitude = relativeAltitudeFloat.value,
+            altitude = absoluteAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -154,7 +154,7 @@ class ControlScreenViewModel(
         moveDroneUseCase(
             latitude = latitudeDegDouble.value,
             longitude = newLongitude,
-            altitude = relativeAltitudeFloat.value,
+            altitude = absoluteAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -168,7 +168,7 @@ class ControlScreenViewModel(
         moveDroneUseCase(
             latitude = newLatitude,
             longitude = longitudeDegDouble.value,
-            altitude = relativeAltitudeFloat.value,
+            altitude = absoluteAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -182,7 +182,7 @@ class ControlScreenViewModel(
         moveDroneUseCase(
             latitude = newLatitude,
             longitude = longitudeDegDouble.value,
-            altitude = relativeAltitudeFloat.value,
+            altitude = absoluteAltitudeFloat.value,
             yawDegree = 0F
         )
     }
@@ -204,7 +204,7 @@ class ControlScreenViewModel(
      * This function is used to make the [drone] orbit on the current location.
      * */
     fun orbit() {
-        val radius = 50F
+        val radius = 25F
         val velocity = 50F
         val behaviour = Action.OrbitYawBehavior.HOLD_FRONT_TO_CIRCLE_CENTER
         val lat = latitudeDegDouble.value
