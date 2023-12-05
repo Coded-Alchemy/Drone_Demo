@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -54,9 +57,14 @@ fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinVi
     val batteryPercentage by viewModel.batteryRemaining.collectAsState()
     val droneSpeed by viewModel.speed.collectAsState()
     val isNetworkConnected by viewModel.isNetworkConnected.collectAsState()
+    val dronePosition = LatLng(droneLatitude, droneLongitude)
+    val cameraPositionState = rememberCameraPositionState {
+        position =
+            CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 18f)
+    }
 
     if (isNetworkConnected) {
-        ConstraintLayout(modifier = modifier) {
+        ConstraintLayout(modifier = modifier.fillMaxHeight()) {
             val (mapCard, telemetryCard, buttonCard) = createRefs()
 
             Card(
@@ -65,19 +73,14 @@ fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinVi
                     .padding(all = dimensionResource(id = R.dimen.default_padding))
                     .height(intrinsicSize = IntrinsicSize.Max)
                     .constrainAs(mapCard) {
-                        top.linkTo(parent.top, margin = 16.dp)
+                        top.linkTo(parent.top, margin = 0.dp)
                         bottom.linkTo(telemetryCard.top, margin = 16.dp)
                     },
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = dimensionResource(id = R.dimen.card_elevation)
                 )
             ) {
-                val dronePosition = LatLng(droneLatitude, droneLongitude)
-                val cameraPositionState = rememberCameraPositionState {
-                    position =
-                        CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 100f)
-                }
-                GoogleMap(
+                GoogleMap(modifier = modifier.heightIn(min = 300.dp),
                     cameraPositionState = cameraPositionState
                 ) {
                     Marker(

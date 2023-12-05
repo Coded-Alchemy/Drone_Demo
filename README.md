@@ -119,10 +119,6 @@ This app has been tested on a OnePlus 9. There may be some unknown defects with 
 
 - If things are left running for a while, the app wont be able to reconnect because the port will still be in use.
 
-- The size of the map needs to be larger.
-
-- The map wont automatically relocate its camera position to view the Drone marker. Manual scrolling north from its current position is needed. Zooming out via the negative button is suggested to faster locate the drone marker placed on the map.
-
 - exception messages are not surfaced to the user yet.
 
 - The app currently wont recover from weird drone states.
@@ -134,14 +130,10 @@ This app has been tested on a OnePlus 9. There may be some unknown defects with 
 
 - The MavServer should be ran from a background service, this was omitted for faster development.
 
-- The server / drone connection process should return a value to prevent double clicking the connection button.
-
 - Add voice capabilities to add vocal control of drone.
 
 - Fix Map size.
 
 - Figure out more MavSDK features to improve connection/disconnection experience. (Not much is documented for the Java language).
-
-- Fix map camera position.
 
 - Surface exception messages to user.

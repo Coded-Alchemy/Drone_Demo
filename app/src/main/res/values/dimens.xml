@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="dp_10">10dp</dimen>
-    <dimen name="dp_8">8dp</dimen>
     <dimen name="dp_6">6dp</dimen>
+    <dimen name="dp_8">8dp</dimen>
+    <dimen name="dp_10">10dp</dimen>
     <dimen name="dp_12">10dp</dimen>
+    <dimen name="dp_16">16dp</dimen>
 
 
-    <dimen name="default_padding">@dimen/dp_10</dimen>
+    <dimen name="default_padding">@dimen/dp_16</dimen>
     <dimen name="card_elevation">@dimen/dp_12</dimen>
     <dimen name="card_column_padding">@dimen/dp_6</dimen>
 
