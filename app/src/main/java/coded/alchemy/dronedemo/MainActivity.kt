@@ -10,16 +10,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import coded.alchemy.dronedemo.data.DroneRepository
 import coded.alchemy.dronedemo.data.ServerRepository
+import coded.alchemy.dronedemo.data.SpeechRecognizer
 import coded.alchemy.dronedemo.network.NetworkMonitor
 import coded.alchemy.dronedemo.ui.app.DroneDemoApp
 import coded.alchemy.dronedemo.ui.theme.DroneDemoTheme
 import org.koin.android.ext.android.inject
-import org.vosk.Model
-import org.vosk.android.RecognitionListener
-import org.vosk.android.SpeechService
-import org.vosk.android.SpeechStreamService
-import org.vosk.android.StorageService
-import java.io.IOException
 
 /**
  * MainActivity.kt
@@ -27,12 +22,10 @@ import java.io.IOException
  * Application entry point. This application uses Jetpack Compose for the UI.
  * @author Taji Abdullah
  * */
-class MainActivity : ComponentActivity(), RecognitionListener {
+class MainActivity : ComponentActivity() {
     private val TAG = this.javaClass.simpleName
 
-    private lateinit var model: Model
-    private lateinit var speechService: SpeechService
-    private lateinit var speechStreamService: SpeechStreamService
+    private var speechRecognizer = SpeechRecognizer
 
     private val getRecordAudioPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { permissible ->
@@ -40,7 +33,7 @@ class MainActivity : ComponentActivity(), RecognitionListener {
             when {
                 permissible -> {
                     Log.d(TAG, "permission granted")
-                    initSpeechModel()
+                    speechRecognizer.initSpeechModel(this)
                 }
 
                 !shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO) -> {
@@ -76,33 +69,19 @@ class MainActivity : ComponentActivity(), RecognitionListener {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        speechRecognizer.pause(true)
+    }
+
     /**
      * [onStop] is used to destroy resources utilizing the applications lifecycle.
      * */
     override fun onStop() {
         Log.d(TAG, "onStop: ")
         shutDownDrone()
+        speechRecognizer.destroy()
         super.onStop()
-    }
-
-    override fun onPartialResult(hypothesis: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onResult(hypothesis: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onFinalResult(hypothesis: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onError(exception: Exception?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onTimeout() {
-        TODO("Not yet implemented")
     }
 
     /**
@@ -115,23 +94,6 @@ class MainActivity : ComponentActivity(), RecognitionListener {
         connectivityManager?.requestNetwork(
             NetworkMonitor.networkRequest,
             NetworkMonitor.networkCallback
-        )
-    }
-
-    private fun initSpeechModel() {
-        Log.d(TAG, "initSpeechModel: ")
-        // TODO: run on IO Dispatcher
-        StorageService.unpack(
-            this,
-            "model-en-us",
-            "model",
-            { unpackedModel: Model ->
-                model = unpackedModel
-                // Additional logic if needed after unpacking the model
-            },
-            { exception: IOException ->
-                Log.e(TAG, "initModel: $exception")
-            }
         )
     }
 
@@ -149,10 +111,14 @@ class MainActivity : ComponentActivity(), RecognitionListener {
      * */
     private fun shutDownDrone() {
         Log.d(TAG, "shutDownDrone: ")
-        val serverRepository: ServerRepository by inject()
-        val droneRepository: DroneRepository by inject()
-        droneRepository.drone.dispose()
-        serverRepository.mavServer().stop()
-        serverRepository.mavServer().destroy()
+        try {
+            val serverRepository: ServerRepository by inject()
+            val droneRepository: DroneRepository by inject()
+            droneRepository.drone.dispose()
+            serverRepository.mavServer().stop()
+            serverRepository.mavServer().destroy()
+        } catch (e: Exception) {
+            Log.e(TAG, "shutDownDrone: $e")
+        }
     }
 }

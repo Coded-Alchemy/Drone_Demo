@@ -12,7 +12,7 @@ import io.mavsdk.System
  * @property [drone] the [System] this app will connect to.
  * @author Taji Abdullah
  * */
-class DroneRepository {
+class DroneRepository() {
 
     lateinit var drone: System
 

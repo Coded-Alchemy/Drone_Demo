@@ -1,7 +1,7 @@
 package coded.alchemy.dronedemo.ui.control
 
 import android.util.Log
-import coded.alchemy.dronedemo.data.DroneRepository
+import coded.alchemy.dronedemo.data.SpeechRecognizer
 import coded.alchemy.dronedemo.domain.DroneLandUseCase
 import coded.alchemy.dronedemo.domain.DroneOrbitUseCase
 import coded.alchemy.dronedemo.domain.DroneTakeOffUseCase
@@ -64,6 +64,9 @@ class ControlScreenViewModel(
         getGpsDataUseCase()
         getBatteryPercentageUseCase()
         getDroneSpeedUseCase()
+
+        val speechRecognizer = SpeechRecognizer
+        speechRecognizer.startListening()
     }
 
     override fun onCleared() {
