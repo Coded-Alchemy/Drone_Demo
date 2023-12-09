@@ -2,11 +2,17 @@ package coded.alchemy.dronedemo.data
 
 import android.content.Context
 import android.util.Log
+import coded.alchemy.dronedemo.domain.DroneTakeOffUseCase
+import coded.alchemy.dronedemo.util.extractTextValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent.inject
 import org.vosk.LibVosk
 import org.vosk.LogLevel
 import org.vosk.Model
@@ -24,6 +30,10 @@ object SpeechRecognizer : RecognitionListener {
     private var speechService: SpeechService? = null
     private var speechStreamService: SpeechStreamService? = null
     private val scope = CoroutineScope(Dispatchers.IO + Job())
+    private var isListeningPaused = false
+
+    private val _resultText = MutableStateFlow("")
+    val resultText: StateFlow<String> = _resultText
 
     init {
         LibVosk.setLogLevel(LogLevel.INFO)
@@ -34,7 +44,10 @@ object SpeechRecognizer : RecognitionListener {
     }
 
     override fun onResult(hypothesis: String?) {
-        Log.d(TAG, "onResult: $hypothesis")
+        Log.d(TAG, "onResult: ${hypothesis?.extractTextValue()}")
+        hypothesis?.let { string ->
+            _resultText.value = string.extractTextValue().toString()
+        }
     }
 
     override fun onFinalResult(hypothesis: String?) {
@@ -71,14 +84,16 @@ object SpeechRecognizer : RecognitionListener {
 
     fun startListening() {
         Log.d(TAG, "start: ")
-        initializeSpeechRecognition()
+        if (speechService == null) initializeSpeechRecognition()
+        if (isListeningPaused) pause(false)
         speechService?.startListening(SpeechRecognizer)
     }
 
     fun pause(isPaused: Boolean) {
-        Log.d(TAG, "pause: $isPaused")
         speechService?.let { speechService ->
+            Log.d(TAG, "pause: $isPaused")
             speechService.setPause(isPaused)
+            isListeningPaused = isPaused
         }
     }
 

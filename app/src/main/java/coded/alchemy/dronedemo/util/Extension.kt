@@ -53,3 +53,9 @@ fun String.appendPercentSign(): String {
 fun String.appendMph(): String {
     return "$this mph"
 }
+
+fun String.extractTextValue(): String? {
+    val regex = "\"text\"[^{]*\"([^\"]*)\"".toRegex()
+    val matchResult = regex.find(this)
+    return matchResult?.groupValues?.get(1)
+}
