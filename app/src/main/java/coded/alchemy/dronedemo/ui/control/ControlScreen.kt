@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -65,7 +64,7 @@ fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinVi
 
     if (isNetworkConnected) {
         ConstraintLayout(modifier = modifier.fillMaxHeight()) {
-            val (mapCard, telemetryCard, buttonCard) = createRefs()
+            val (mapCard, telemetryCard, buttonCard, vocalCard) = createRefs()
 
             Card(
                 modifier =
@@ -74,13 +73,13 @@ fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinVi
                     .height(intrinsicSize = IntrinsicSize.Max)
                     .constrainAs(mapCard) {
                         top.linkTo(parent.top, margin = 0.dp)
-                        bottom.linkTo(telemetryCard.top, margin = 16.dp)
+                        bottom.linkTo(telemetryCard.top, margin = 8.dp)
                     },
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = dimensionResource(id = R.dimen.card_elevation)
                 )
             ) {
-                GoogleMap(modifier = modifier.heightIn(min = 300.dp),
+                GoogleMap(modifier = modifier.heightIn(min = 250.dp),
                     cameraPositionState = cameraPositionState
                 ) {
                     Marker(
@@ -97,7 +96,8 @@ fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinVi
                     .padding(all = dimensionResource(id = R.dimen.default_padding))
                     .fillMaxWidth()
                     .constrainAs(telemetryCard) {
-                        bottom.linkTo(buttonCard.top, margin = 16.dp)
+                        top.linkTo(mapCard.bottom)
+                        bottom.linkTo(buttonCard.top, margin = 8.dp)
                     },
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = dimensionResource(id = R.dimen.card_elevation)
@@ -143,7 +143,8 @@ fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinVi
                     .padding(all = dimensionResource(id = R.dimen.default_padding))
                     .fillMaxWidth()
                     .constrainAs(buttonCard) {
-                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        top.linkTo(telemetryCard.bottom)
+                        bottom.linkTo(vocalCard.top, margin = 8.dp)
                     },
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = dimensionResource(id = R.dimen.card_elevation)
@@ -160,6 +161,28 @@ fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinVi
                     ) {
                         ElevationButtons(modifier = modifier, viewModel = viewModel)
                         DirectionalButtons(modifier = modifier, viewModel = viewModel)
+                    }
+                }
+            }
+
+            Card(modifier = modifier
+                .padding(all = dimensionResource(id = R.dimen.default_padding))
+                .fillMaxWidth()
+                .constrainAs(vocalCard) {
+                    top.linkTo(buttonCard.bottom)
+                    bottom.linkTo(parent.bottom, margin = 16.dp)
+                },
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = dimensionResource(id = R.dimen.card_elevation)
+                )) {
+                Column(
+//                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    ElevatedButton(onClick = {
+                        viewModel.listenForCommand()
+                    }) {
+                        Text(stringResource(id = R.string.btn_voice_command))
                     }
                 }
             }

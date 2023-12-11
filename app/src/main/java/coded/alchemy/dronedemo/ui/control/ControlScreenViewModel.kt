@@ -1,7 +1,8 @@
 package coded.alchemy.dronedemo.ui.control
 
 import android.util.Log
-import coded.alchemy.dronedemo.data.DroneRepository
+import androidx.lifecycle.viewModelScope
+import coded.alchemy.dronedemo.data.SpeechRecognizer
 import coded.alchemy.dronedemo.domain.DroneLandUseCase
 import coded.alchemy.dronedemo.domain.DroneOrbitUseCase
 import coded.alchemy.dronedemo.domain.DroneTakeOffUseCase
@@ -13,29 +14,27 @@ import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
 import coded.alchemy.dronedemo.domain.GetPositionDataUseCase
 import coded.alchemy.dronedemo.domain.MoveDroneUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
+import coded.alchemy.dronedemo.util.VoiceCommand
 import io.mavsdk.action.Action
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
 
 /**
  * ControlScreenViewModel.kt
  *
  * This class contains the drone connection logic.
- * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @param getBatteryPercentageUseCase [GetBatteryPercentageUseCase] provides drone battery stats.
  * @property relativeAltitudeFloat [StateFlow] [Float] that observes altitude used.
  * @property absoluteAltitudeFloat [StateFlow] [Float] that observes
- * [_absoluteAltitudeFloat] to expose it publicly. This is not currently used.
  * @property latitudeDegDouble [StateFlow] [Double] that observes the [drone] latitude.
  * @property longitudeDegDouble [StateFlow] [Double] that observes
- * [_longitudeDegDouble] to expose it publicly. This is the [drone] longitude.
  * @property flightMode [StateFlow] [String] that observes
- * [_flightMode] to expose it publicly. This is the [drone] current flight mode.
  * @property satelliteCount [StateFlow] [Int] that observes
- * [_satelliteCount] to expose it publicly. This is the [drone] satellite count.
  * @property batteryRemaining [StateFlow] [Float] that observes
- * [_batteryRemaining] to expose it publicly. This is the [drone] battery percentage.
  * @property speed [StateFlow] [Float] that observes
- * [_speed] to expose it publicly. This is the [drone] velocity.
  * @author Taji Abdullah
  * */
 class ControlScreenViewModel(
@@ -48,7 +47,7 @@ class ControlScreenViewModel(
     private val getArmedValueUseCase: GetArmedValueUseCase,
     private val getGpsDataUseCase: GetGpsDataUseCase,
     private val getDroneSpeedUseCase: GetDroneSpeedUseCase,
-    private val getBatteryPercentageUseCase: GetBatteryPercentageUseCase
+    private val getBatteryPercentageUseCase: GetBatteryPercentageUseCase,
 ) : DroneDemoViewModel() {
     private val TAG = this.javaClass.simpleName
     val relativeAltitudeFloat: StateFlow<Float> = getPositionDataUseCase.relativeAltitudeFloat
@@ -59,6 +58,9 @@ class ControlScreenViewModel(
     val satelliteCount: StateFlow<Int> = getGpsDataUseCase.satelliteCount
     val batteryRemaining: StateFlow<Float> = getBatteryPercentageUseCase.batteryRemaining
     val speed: StateFlow<Float> = getDroneSpeedUseCase.speed
+    private val _commandReceived = MutableSharedFlow<String>()
+    private val commandReceived: SharedFlow<String> get() = _commandReceived
+    private val vocalCommand: StateFlow<String> = SpeechRecognizer.resultText
 
     /**
      * This function gets called when this class is instantiated to start collecting
@@ -71,8 +73,23 @@ class ControlScreenViewModel(
         getGpsDataUseCase()
         getBatteryPercentageUseCase()
         getDroneSpeedUseCase()
+
+        viewModelScope.launch {
+            vocalCommand.collect { command ->
+                _commandReceived.emit(command)
+            }
+        }
+
+        viewModelScope.launch {
+            commandReceived.collect { command ->
+                handleCommand(command)
+            }
+        }
     }
 
+    /**
+     * Ensure nothing lives outside of the scope of this [DroneDemoViewModel] lifecycle.
+     * */
     override fun onCleared() {
         droneTakeOffUseCase.cancel()
         droneLandUseCase.cancel()
@@ -204,13 +221,44 @@ class ControlScreenViewModel(
      * This function is used to make the [drone] orbit on the current location.
      * */
     fun orbit() {
-        val radius = 25F
-        val velocity = 50F
-        val behaviour = Action.OrbitYawBehavior.HOLD_FRONT_TO_CIRCLE_CENTER
-        val lat = latitudeDegDouble.value
-        val lon = longitudeDegDouble.value
-        val alt = absoluteAltitudeFloat.value.toDouble()
+        Log.d(TAG, "orbit: ")
+        droneOrbitUseCase(
+            radius = 25F,
+            velocity = 50F,
+            behaviour = Action.OrbitYawBehavior.HOLD_FRONT_TO_CIRCLE_CENTER,
+            latitude = latitudeDegDouble.value,
+            longitude = longitudeDegDouble.value,
+            altitude = absoluteAltitudeFloat.value.toDouble()
+        )
+    }
 
-        droneOrbitUseCase(radius, velocity, behaviour, lat, lon, alt)
+    /**
+     * This function starts listening for voice commands.
+     * */
+    fun listenForCommand() {
+        Log.d(TAG, "listenForCommand: ")
+        val speechRecognizer = SpeechRecognizer
+        speechRecognizer.startListening()
+    }
+
+    /**
+     * This function performs a function based on the given voice command.
+     * */
+    private fun handleCommand(command: String) {
+        Log.d(TAG, "handleCommand: $command")
+        viewModelScope.launch {
+            when {
+                VoiceCommand.TakeoffCommandSet.commands.any {  command.contains(it) } -> takeoff()
+                VoiceCommand.LandCommandSet.commands.any { command.contains(it) } -> land()
+                VoiceCommand.MoveUpCommandSet.commands.any { command.contains(it) } -> moveUp()
+                VoiceCommand.MoveDownCommandSet.commands.any { command.contains(it) } -> moveDown()
+                VoiceCommand.MoveRightCommandSet.commands.any { command.contains(it) } -> moveRight()
+                VoiceCommand.MoveLeftCommandSet.commands.any { command.contains(it) } -> moveLeft()
+                VoiceCommand.MoveForwardCommandSet.commands.any { command.contains(it) } -> moveForward()
+                VoiceCommand.MoveBackwardCommandSet.commands.any { command.contains(it) } -> moveBackward()
+                VoiceCommand.StopCommandSet.commands.any { command.contains(it) } -> stop()
+                VoiceCommand.OrbitCommandSet.commands.any { command.contains(it) } -> orbit()
+            }
+        }
     }
 }

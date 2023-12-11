@@ -27,11 +27,11 @@ class ServerRepository {
     companion object {
         // For Singleton instantiation
         @Volatile
-        private var instance: DroneRepository? = null
+        private var instance: ServerRepository? = null
 
         fun getInstance() =
             instance ?: synchronized(this) {
-                instance ?: DroneRepository().also { instance = it }
+                instance ?: ServerRepository().also { instance = it }
             }
     }
 }
