@@ -14,6 +14,7 @@ import coded.alchemy.dronedemo.domain.GetFlightModeUseCase
 import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
 import coded.alchemy.dronedemo.domain.GetPositionDataUseCase
 import coded.alchemy.dronedemo.domain.MoveDroneUseCase
+import coded.alchemy.dronedemo.domain.StopDroneUseCase
 import coded.alchemy.dronedemo.ui.connection.ConnectionScreenViewModel
 import coded.alchemy.dronedemo.ui.control.ControlScreenViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
@@ -42,4 +43,5 @@ val appModule = module {
     single { DroneOrbitUseCase(droneRepository = get()) }
     single { DroneLandUseCase(droneRepository = get()) }
     single { DroneTakeOffUseCase(droneRepository = get()) }
+    single { StopDroneUseCase(droneRepository = get()) }
 }

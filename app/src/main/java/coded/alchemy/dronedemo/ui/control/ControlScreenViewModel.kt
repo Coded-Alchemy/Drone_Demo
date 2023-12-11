@@ -13,6 +13,7 @@ import coded.alchemy.dronedemo.domain.GetFlightModeUseCase
 import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
 import coded.alchemy.dronedemo.domain.GetPositionDataUseCase
 import coded.alchemy.dronedemo.domain.MoveDroneUseCase
+import coded.alchemy.dronedemo.domain.StopDroneUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import coded.alchemy.dronedemo.util.VoiceCommand
 import io.mavsdk.action.Action
@@ -48,6 +49,7 @@ class ControlScreenViewModel(
     private val getGpsDataUseCase: GetGpsDataUseCase,
     private val getDroneSpeedUseCase: GetDroneSpeedUseCase,
     private val getBatteryPercentageUseCase: GetBatteryPercentageUseCase,
+    private val stopDroneUseCase: StopDroneUseCase
 ) : DroneDemoViewModel() {
     private val TAG = this.javaClass.simpleName
     val relativeAltitudeFloat: StateFlow<Float> = getPositionDataUseCase.relativeAltitudeFloat
@@ -101,6 +103,7 @@ class ControlScreenViewModel(
         getGpsDataUseCase.cancel()
         getDroneSpeedUseCase.cancel()
         getBatteryPercentageUseCase.cancel()
+        stopDroneUseCase.cancel()
         super.onCleared()
     }
 
@@ -209,12 +212,7 @@ class ControlScreenViewModel(
      * */
     fun stop() {
         Log.d(TAG, "stop: ")
-        moveDroneUseCase(
-            latitude = latitudeDegDouble.value,
-            longitude = longitudeDegDouble.value,
-            altitude = absoluteAltitudeFloat.value,
-            yawDegree = 0F
-        )
+        stopDroneUseCase()
     }
 
     /**
