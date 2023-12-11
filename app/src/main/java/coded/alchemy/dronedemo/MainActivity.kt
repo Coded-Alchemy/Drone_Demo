@@ -69,6 +69,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * [onPause] pause speech recognition if its in operation.
+     * */
     override fun onPause() {
         super.onPause()
         speechRecognizer.pause(true)
@@ -97,6 +100,9 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    /**
+     * Check if permission is granted to use audio.
+     * */
     private fun checkRecordAudioPermission() {
         Log.d(TAG, "checkRecordAudioPermission: ")
         if (shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO)) {

@@ -24,6 +24,8 @@ A video of the app functionality can be found in the asset folder in the root of
 
 - Google Maps are used to display drone location because they already have my info and the the other (good) map apis wanted payment information to gain access even for free tiers.
 
+- Speech Recognition is used to perform vocal commands, Vosk is used to handle this. Vosk performs offline speech recognition and keeps info on device.
+
 
 ---
 
@@ -36,6 +38,7 @@ The following dependencies have been used.
 - Mavlink SDK
 - Kotlin StateFlow
 - Google Maps
+- Vosk
 
 ---
 
@@ -66,7 +69,7 @@ This is optional if you want to see the drone moving in the simulated environmen
 
 ## Setup
 
-- After installing Docker, run it.
+- After installing Docker
 
 - Ensure host machine and Android device are both on the same wifi network.
 
@@ -103,12 +106,30 @@ This is optional if you want to see the drone moving in the simulated environmen
 
 - If the drone is landed in a weird location it might get into a weird state(I think it crashes????) (QGround Control is good to see open fields.)
 
+- Permission needs to be granted for voice commands:
+
+  - take off say - liftoff, takeoff, launch
+
+  - land say - land, touchdown
+
+  - fly up say - move up, fly up
+
+  - fly down say - move down, fly down
+
+  - fly left say - move left, fly left
+
+  - fly right say - move right, fly right
+
+  - fly forward say - move forward, fly forward
+
+  - fly backward say - move backward, fly backward
+
+  - orbit say - orbit, circle
+
+  - stop say - stop, hold, hold position
+
 
 **Notes**
-
-- I once managed to have the drone end up upside down, this was determined by QGroundControl. The normal blue over green was reversed in the sensor display.
-
-- I think I managed to get the drone stuck by flying forward from in hover height. This is my best guess, QGrondControl showed the drone marker on top of a tree, but the altitude was not high enough for the drone to be above a tree. The drone would not move up in altitude.
 
 - Weird drone states are not handled at this time...
 
@@ -119,9 +140,11 @@ This app has been tested on a OnePlus 9. There may be some unknown defects with 
 
 - If things are left running for a while, the app wont be able to reconnect because the port will still be in use.
 
+- The map needs to be scrolled if the drone moves out of view.
+
 - exception messages are not surfaced to the user yet.
 
-- The app currently wont recover from weird drone states.
+- Some voice commands work better than others due to what gets recognized/accent, etc...
 
 
 ---
@@ -130,10 +153,10 @@ This app has been tested on a OnePlus 9. There may be some unknown defects with 
 
 - The MavServer should be ran from a background service, this was omitted for faster development.
 
-- Add voice capabilities to add vocal control of drone.
-
-- Fix Map size.
-
 - Figure out more MavSDK features to improve connection/disconnection experience. (Not much is documented for the Java language).
 
+- Fix map camera position when drone moves out of view.
+
 - Surface exception messages to user.
+
+- Add a way to save custom voice commands
