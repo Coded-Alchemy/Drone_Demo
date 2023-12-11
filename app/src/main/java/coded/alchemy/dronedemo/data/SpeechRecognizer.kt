@@ -2,7 +2,6 @@ package coded.alchemy.dronedemo.data
 
 import android.content.Context
 import android.util.Log
-import coded.alchemy.dronedemo.domain.DroneTakeOffUseCase
 import coded.alchemy.dronedemo.util.extractTextValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,8 +10,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
-import org.koin.java.KoinJavaComponent.inject
 import org.vosk.LibVosk
 import org.vosk.LogLevel
 import org.vosk.Model
@@ -22,8 +19,14 @@ import org.vosk.android.SpeechService
 import org.vosk.android.SpeechStreamService
 import org.vosk.android.StorageService
 import java.io.IOException
-import java.lang.Exception
 
+/**
+ * SpeechRecognizer.kt
+ *
+ * This class performs Speech Recognition and returns text.
+ * Speech Recognition is performed by [LibVosk].
+ * @author Taji Abdullah
+ * */
 object SpeechRecognizer : RecognitionListener {
     private val TAG = this.javaClass.simpleName
     private lateinit var model: Model
@@ -35,14 +38,25 @@ object SpeechRecognizer : RecognitionListener {
     private val _resultText = MutableStateFlow("")
     val resultText: StateFlow<String> = _resultText
 
+    /**
+     * Class initialization starts the Vosk logger.
+     * */
     init {
         LibVosk.setLogLevel(LogLevel.INFO)
     }
 
+    /**
+     * Partial speech results returned in a json string.
+     * @param hypothesis the json result string.
+     * */
     override fun onPartialResult(hypothesis: String?) {
         Log.v(TAG, "onPartialResult: $hypothesis")
     }
 
+    /**
+     * Speech results returned in a json string.
+     * @param hypothesis the json result string.
+     * */
     override fun onResult(hypothesis: String?) {
         Log.d(TAG, "onResult: ${hypothesis?.extractTextValue()}")
         hypothesis?.let { string ->
@@ -50,20 +64,33 @@ object SpeechRecognizer : RecognitionListener {
         }
     }
 
+    /**
+     * @param hypothesis the json result string.
+     * */
     override fun onFinalResult(hypothesis: String?) {
         Log.d(TAG, "onFinalResult: $hypothesis")
     }
 
+    /**
+     * Error results
+     * @param exception the error thrown.
+     * */
     override fun onError(exception: Exception?) {
         Log.e(TAG, "onError: $exception")
         destroy()
     }
 
+    /**
+     * Timeout
+     * */
     override fun onTimeout() {
         Log.w(TAG, "onTimeout: ")
         destroy()
     }
 
+    /**
+     * Initialize the speech recognition model.
+     * */
     fun initSpeechModel(context: Context) {
         Log.d(TAG, "initSpeechModel: ")
         scope.launch {
@@ -82,6 +109,9 @@ object SpeechRecognizer : RecognitionListener {
         }
     }
 
+    /**
+     * start listening to perform speech recognition.
+     * */
     fun startListening() {
         Log.d(TAG, "start: ")
         if (speechService == null) initializeSpeechRecognition()
@@ -89,6 +119,9 @@ object SpeechRecognizer : RecognitionListener {
         speechService?.startListening(SpeechRecognizer)
     }
 
+    /**
+     * Pause speech recognition.
+     * */
     fun pause(isPaused: Boolean) {
         speechService?.let { speechService ->
             Log.d(TAG, "pause: $isPaused")
@@ -97,6 +130,9 @@ object SpeechRecognizer : RecognitionListener {
         }
     }
 
+    /**
+     * This function provides a way destroy resources.
+     * */
     fun destroy() {
         Log.d(TAG, "destroy: ")
         speechService?.let { service ->
@@ -111,6 +147,9 @@ object SpeechRecognizer : RecognitionListener {
         scope.cancel()
     }
 
+    /**
+     * Initialization of speech recognition.
+     * */
     private fun initializeSpeechRecognition() {
         Log.d(TAG, "initializeSpeechRecognition: ")
         try {
