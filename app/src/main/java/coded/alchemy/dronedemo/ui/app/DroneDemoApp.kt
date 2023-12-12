@@ -6,6 +6,9 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -34,15 +37,16 @@ fun DroneDemoApp(modifier: Modifier = Modifier) {
     KoinApplication(application = {
         modules(appModule)
     }) {
-        val navController = rememberNavController()
-        val visibleAppbar by remember { mutableStateOf(false) }
-
         Surface(
             modifier = modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            Scaffold(modifier = modifier,
-                topBar = { DroneDemoAppbar(modifier = modifier, appBarVisible = visibleAppbar) }
+            val navController = rememberNavController()
+            val visibleAppbar by remember { mutableStateOf(false) }
+
+            Scaffold(modifier = modifier.fillMaxSize(),
+                topBar = { DroneDemoAppbar(modifier = modifier, appBarVisible = visibleAppbar) },
+                snackbarHost = { DroneDemoSnackbarHost(modifier = modifier) }
             ) { innerPadding ->
                 DroneDemoNavHost(
                     navController = navController,
@@ -70,5 +74,13 @@ fun DroneDemoAppbar(
                 )
             }
         )
+    }
+}
+
+@Composable
+fun DroneDemoSnackbarHost(modifier: Modifier = Modifier) {
+    SnackbarHost(hostState = it) {
+//                        val backgroundColor = snackbarDelegate.snackbarBackgroundColor
+        Snackbar(snackbarData = it, containerColor = MaterialTheme.colorScheme.background)
     }
 }
