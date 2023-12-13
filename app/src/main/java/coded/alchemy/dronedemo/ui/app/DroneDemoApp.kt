@@ -2,6 +2,7 @@ package coded.alchemy.dronedemo.ui.app
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,8 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -27,13 +30,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coded.alchemy.dronedemo.R
 import coded.alchemy.dronedemo.di.appModule
 import coded.alchemy.dronedemo.ui.navigation.DroneDemoNavHost
 import coded.alchemy.dronedemo.ui.navigation.Screen
+import coded.alchemy.dronedemo.ui.navigation.navbarAccessibleScreens
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.koin.compose.KoinApplication
@@ -54,9 +61,8 @@ fun DroneDemoApp(modifier: Modifier = Modifier) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
 
         var visibleAppbar by rememberSaveable { mutableStateOf(false) }
-
-        var visibleNavbar by remember { mutableStateOf(false) }
-        var visibleFab by remember { mutableStateOf(false) }
+        var visibleNavbar by rememberSaveable { mutableStateOf(false) }
+        var visibleFab by rememberSaveable { mutableStateOf(false) }
 
         val snackBarHostState = remember { SnackbarHostState() }
         val snackBarChannel = remember { Channel<String>(Channel.Factory.CONFLATED) }
@@ -72,6 +78,7 @@ fun DroneDemoApp(modifier: Modifier = Modifier) {
                     SnackbarResult.ActionPerformed -> {
                         /* action has been performed */
                     }
+
                     SnackbarResult.Dismissed -> {
                         /* dismissed, no action needed */
                     }
@@ -84,6 +91,18 @@ fun DroneDemoApp(modifier: Modifier = Modifier) {
             Screen.ControlScreen.route -> {
                 visibleAppbar = true
                 visibleNavbar = true
+                visibleFab = true
+            }
+
+            Screen.MissionScreen.route -> {
+                visibleAppbar = true
+                visibleNavbar = true
+                visibleFab = false
+            }
+
+            Screen.LogScreen.route -> {
+                visibleAppbar = true
+                visibleNavbar = true
                 visibleFab = false
             }
         }
@@ -92,8 +111,28 @@ fun DroneDemoApp(modifier: Modifier = Modifier) {
         Scaffold(modifier = modifier.fillMaxSize(),
             containerColor = MaterialTheme.colorScheme.background,
             topBar = { DroneDemoAppbar(modifier = modifier, appBarVisible = visibleAppbar) },
-            snackbarHost = { DroneDemoSnackbarHost(modifier = modifier, snackbarHostState = snackBarHostState) },
-            floatingActionButton = { DroneDemoFab(channel = snackBarChannel, modifier = modifier, isVisible = visibleFab) }
+            bottomBar = {
+                navBackStackEntry?.let { backStackEntry ->
+                    DroneDemoBottomNavigation(
+                        navController = navController,
+                        backStackEntry = backStackEntry,
+                        isVisible = visibleNavbar
+                    )
+                }
+            },
+            snackbarHost = {
+                DroneDemoSnackbarHost(
+                    modifier = modifier,
+                    snackbarHostState = snackBarHostState
+                )
+            },
+            floatingActionButton = {
+                DroneDemoFab(
+                    channel = snackBarChannel,
+                    modifier = modifier,
+                    isVisible = visibleFab
+                )
+            }
         ) { innerPadding ->
             DroneDemoNavHost(
                 modifier = modifier.padding(innerPadding),
@@ -110,10 +149,11 @@ fun DroneDemoAppbar(
     modifier: Modifier = Modifier,
     appBarVisible: Boolean
 ) {
-    AnimatedVisibility(visible = appBarVisible,
+    AnimatedVisibility(
+        visible = appBarVisible,
         enter = slideInVertically(initialOffsetY = { -it }),
         exit = slideOutVertically(targetOffsetY = { -it })
-        ) {
+    ) {
         CenterAlignedTopAppBar(
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
             title = {
@@ -128,26 +168,62 @@ fun DroneDemoAppbar(
 }
 
 @Composable
+fun DroneDemoBottomNavigation(
+    navController: NavHostController,
+    backStackEntry: NavBackStackEntry,
+    isVisible: Boolean
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { +it }),
+        exit = slideOutVertically(targetOffsetY = { +it })
+    ) {
+        NavigationBar(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.primary
+        ) {
+            val currentRoute = backStackEntry.destination.route
+
+            navbarAccessibleScreens().forEach { screen ->
+                NavigationBarItem(
+                    selected = currentRoute == screen.route,
+                    label = {
+                        Text(
+                            text = stringResource(id = screen.caption),
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
+                    onClick = {
+                        navController.navigate(screen.route)
+                    },
+                    icon = { /*TODO*/ }
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun DroneDemoSnackbarHost(modifier: Modifier = Modifier, snackbarHostState: SnackbarHostState) {
     SnackbarHost(hostState = snackbarHostState) { data ->
-        Snackbar(snackbarData = data, /*containerColor = MaterialTheme.colorScheme.primaryContainer*/)
+        Snackbar(snackbarData = data)
     }
 }
 
 @Composable
 fun DroneDemoFab(modifier: Modifier = Modifier, channel: Channel<String>, isVisible: Boolean) {
-    var clickCount by remember { mutableIntStateOf(0) }
-
-    if (isVisible) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInHorizontally(initialOffsetX = { -it }),
+        exit = slideOutVertically(targetOffsetY = { -it })
+    ) {
         ExtendedFloatingActionButton(
             onClick = {
-                // offset snackbar data to the business logic
-//                channel.trySend(++clickCount)
+                // TODO: start listing for voice commands
             },
             content = {
                 Text(
-                    "Snackbar demo",
-//                    modifier = modifier.padding(innerPadding).fillMaxSize().wrapContentSize()
+                    stringResource(id = R.string.btn_voice_command),
                 )
             }
         )

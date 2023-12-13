@@ -16,4 +16,8 @@
 
     <string name="txt_wifi_disconnected">Wifi is disconnected.</string>
     <string name="txt_wifi_needed">Wifi is needed to connect to drone.</string>
+
+    <string name="screen_control">Controls</string>
+    <string name="screen_mission">Mission</string>
+    <string name="screen_logs">Logs</string>
 </resources>
