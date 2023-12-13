@@ -99,7 +99,7 @@ fun DroneDemoNavHost(
                     animationSpec = tween(tweenTime)
                 )
             }) {
-            ControlScreen(snackBarMessageChannel = snackBarMessageChannel)
+            ControlScreen(modifier = modifier, snackBarMessageChannel = snackBarMessageChannel)
         }
     }
 }

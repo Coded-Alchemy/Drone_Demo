@@ -40,7 +40,7 @@ fun ConnectionScreen(
     viewModel: ConnectionScreenViewModel = koinViewModel(),
     snackBarMessageChannel: Channel<String>
 ) {
-    val isNetworkConnected by viewModel.isNetworkConnected.collectAsState()
+    val networkConnected by viewModel.isNetworkConnected.collectAsState()
     val droneConnected by viewModel.isDroneConnected.collectAsState()
     val isConnecting by viewModel.isDroneConnecting.collectAsState()
 
@@ -57,7 +57,7 @@ fun ConnectionScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (isNetworkConnected) {
+        if (networkConnected) {
             if (isConnecting) {
                 ProgressView()
             } else {

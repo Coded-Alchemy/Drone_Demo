@@ -60,14 +60,14 @@ fun ControlScreen(
     val satelliteCountState by viewModel.satelliteCount.collectAsState()
     val batteryPercentage by viewModel.batteryRemaining.collectAsState()
     val droneSpeed by viewModel.speed.collectAsState()
-    val isNetworkConnected by viewModel.isNetworkConnected.collectAsState()
+    val networkConnected by viewModel.isNetworkConnected.collectAsState()
     val dronePosition = LatLng(droneLatitude, droneLongitude)
     val cameraPositionState = rememberCameraPositionState {
         position =
             CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 18f)
     }
 
-    if (isNetworkConnected) {
+    if (networkConnected) {
         ConstraintLayout(modifier = modifier.fillMaxHeight()) {
             val (mapCard, telemetryCard, buttonCard, vocalCard) = createRefs()
 
@@ -85,7 +85,7 @@ fun ControlScreen(
                 )
             ) {
                 GoogleMap(
-                    modifier = modifier.heightIn(min = 250.dp),
+                    modifier = modifier.heightIn(min = 200.dp),
                     cameraPositionState = cameraPositionState
                 ) {
                     Marker(
@@ -100,7 +100,7 @@ fun ControlScreen(
                 modifier =
                 modifier
                     .padding(all = dimensionResource(id = R.dimen.default_padding))
-                    .fillMaxWidth()
+//                    .fillMaxWidth()
                     .constrainAs(telemetryCard) {
                         top.linkTo(mapCard.bottom)
                         bottom.linkTo(buttonCard.top, margin = 8.dp)
