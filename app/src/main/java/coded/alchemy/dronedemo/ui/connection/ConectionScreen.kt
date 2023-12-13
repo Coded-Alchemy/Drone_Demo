@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coded.alchemy.dronedemo.R
 import coded.alchemy.dronedemo.ui.navigation.Route
+import kotlinx.coroutines.channels.Channel
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -36,12 +37,14 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ConnectionScreen(
     navController: NavHostController,
-    viewModel: ConnectionScreenViewModel = koinViewModel()
+    viewModel: ConnectionScreenViewModel = koinViewModel(),
+    snackBarMessageChannel: Channel<String>
 ) {
     val isNetworkConnected by viewModel.isNetworkConnected.collectAsState()
     val droneConnected by viewModel.isDroneConnected.collectAsState()
     val isConnecting by viewModel.isDroneConnecting.collectAsState()
 
+    // Navigate away when the drone is connected.
     when (droneConnected) {
         true -> navController.navigate(Route.CONTROL_SCREEN)
         else -> {}
@@ -62,6 +65,7 @@ fun ConnectionScreen(
             }
         } else {
             DisconnectedNetworkMessage()
+            snackBarMessageChannel.trySend(stringResource(id = R.string.txt_wifi_disconnected))
         }
     }
 }
@@ -88,7 +92,7 @@ fun DisconnectedNetworkMessage() {
         modifier = Modifier.fillMaxSize()
     ) {
         Text(
-            text = "Wifi is needed to connect to drone.",
+            text = stringResource(id = R.string.txt_wifi_needed),
             fontSize = 25.sp,
             fontWeight = FontWeight.W700,
             modifier = Modifier.padding(10.dp)

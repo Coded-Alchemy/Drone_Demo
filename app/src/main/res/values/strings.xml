@@ -13,4 +13,7 @@
     <string name="btn_stop">Stop</string>
     <string name="btn_orbit">Orbit</string>
     <string name="btn_voice_command">Voice Command</string>
+
+    <string name="txt_wifi_disconnected">Wifi is disconnected.</string>
+    <string name="txt_wifi_needed">Wifi is needed to connect to drone.</string>
 </resources>

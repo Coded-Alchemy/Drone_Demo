@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coded.alchemy.dronedemo.ui.connection.ConnectionScreen
 import coded.alchemy.dronedemo.ui.control.ControlScreen
+import kotlinx.coroutines.channels.Channel
 
 /**
  * Navigation.kt
@@ -29,7 +30,8 @@ import coded.alchemy.dronedemo.ui.control.ControlScreen
 fun DroneDemoNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.ConectionScreen.route
+    startDestination: String = Screen.ConectionScreen.route,
+    snackBarMessageChannel: Channel<String>
 ) {
     val navigate = remember(navController) { NavigationDestination(navController) }
 
@@ -39,10 +41,10 @@ fun DroneDemoNavHost(
         startDestination = startDestination
     ) {
         composable(route = startDestination) {
-            ConnectionScreen(navController)
+            ConnectionScreen(navController = navController, snackBarMessageChannel = snackBarMessageChannel)
         }
         composable(route = Screen.ControlScreen.route) {
-            ControlScreen(modifier = modifier)
+            ControlScreen(snackBarMessageChannel = snackBarMessageChannel)
         }
     }
 }
