@@ -38,6 +38,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.channels.Channel
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -48,7 +49,11 @@ import org.koin.androidx.compose.koinViewModel
  * @author Taji Abdullah
  * */
 @Composable
-fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinViewModel()) {
+fun ControlScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ControlScreenViewModel = koinViewModel(),
+    snackBarMessageChannel: Channel<String>
+) {
     val droneLatitude by viewModel.latitudeDegDouble.collectAsState()
     val droneLongitude by viewModel.longitudeDegDouble.collectAsState()
     val relativeAltitudeFloatState by viewModel.relativeAltitudeFloat.collectAsState()
@@ -79,7 +84,8 @@ fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinVi
                     defaultElevation = dimensionResource(id = R.dimen.card_elevation)
                 )
             ) {
-                GoogleMap(modifier = modifier.heightIn(min = 250.dp),
+                GoogleMap(
+                    modifier = modifier.heightIn(min = 250.dp),
                     cameraPositionState = cameraPositionState
                 ) {
                     Marker(
@@ -165,16 +171,18 @@ fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinVi
                 }
             }
 
-            Card(modifier = modifier
-                .padding(all = dimensionResource(id = R.dimen.default_padding))
-                .fillMaxWidth()
-                .constrainAs(vocalCard) {
-                    top.linkTo(buttonCard.bottom)
-                    bottom.linkTo(parent.bottom, margin = 16.dp)
-                },
+            Card(
+                modifier = modifier
+                    .padding(all = dimensionResource(id = R.dimen.default_padding))
+                    .fillMaxWidth()
+                    .constrainAs(vocalCard) {
+                        top.linkTo(buttonCard.bottom)
+                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                    },
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = dimensionResource(id = R.dimen.card_elevation)
-                )) {
+                )
+            ) {
                 Column(
 //                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -190,6 +198,7 @@ fun ControlScreen(modifier: Modifier, viewModel: ControlScreenViewModel = koinVi
         }
     } else {
         DisconnectedNetworkMessage(modifier = modifier)
+        snackBarMessageChannel.trySend(stringResource(id = R.string.txt_wifi_disconnected))
     }
 }
 
@@ -295,7 +304,7 @@ fun DisconnectedNetworkMessage(modifier: Modifier) {
         modifier = modifier.fillMaxSize()
     ) {
         Text(
-            text = "Wifi is needed to connect to drone.",
+            text = stringResource(id = R.string.txt_wifi_needed),
             fontSize = 25.sp,
             fontWeight = FontWeight.W700,
             modifier = modifier.padding(10.dp)
