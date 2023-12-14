@@ -139,7 +139,7 @@ fun DroneDemoNavHost(
                 )
             }
         ) {
-            MissionScreen()
+            MissionScreen(modifier = modifier)
         }
         composable(
             route = Screen.LogScreen.route,
@@ -168,7 +168,7 @@ fun DroneDemoNavHost(
                 )
             }
         ) {
-            LogScreen()
+            LogScreen(modifier = modifier)
         }
     }
 }

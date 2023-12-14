@@ -30,7 +30,7 @@ class GetPositionDataUseCase(private val droneRepository: DroneRepository) : Dro
     val longitudeDegDouble: StateFlow<Double> = _longitudeDegDouble
 
     operator fun invoke() {
-        scope.launch(Dispatchers.Default) {
+        scope.launch(Dispatchers.Main) {
             try {
                 droneRepository.drone.telemetry.position
                     .subscribe(
