@@ -35,7 +35,8 @@ fun DroneDemoNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     startDestination: String = Screen.ConnectionScreen.route,
-    snackBarMessageChannel: Channel<String>
+    snackBarMessageChannel: Channel<String>,
+    setFabOnClick: (() -> Unit) -> Unit
 ) {
     val navigate = remember(navController) { NavigationDestination(navController) }
     val tweenTime = integerResource(id = R.integer.tween_time)
@@ -43,7 +44,7 @@ fun DroneDemoNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
     ) {
         composable(
             route = startDestination,
@@ -99,7 +100,7 @@ fun DroneDemoNavHost(
                     animationSpec = tween(tweenTime)
                 )
             }) {
-            ControlScreen(modifier = modifier, snackBarMessageChannel = snackBarMessageChannel)
+            ControlScreen(modifier = modifier, snackBarMessageChannel = snackBarMessageChannel, setFabOnClick = setFabOnClick)
         }
     }
 }

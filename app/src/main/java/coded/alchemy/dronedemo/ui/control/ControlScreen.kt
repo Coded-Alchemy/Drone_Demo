@@ -16,6 +16,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -52,7 +53,8 @@ import org.koin.androidx.compose.koinViewModel
 fun ControlScreen(
     modifier: Modifier = Modifier,
     viewModel: ControlScreenViewModel = koinViewModel(),
-    snackBarMessageChannel: Channel<String>
+    snackBarMessageChannel: Channel<String>,
+    setFabOnClick: (() -> Unit) -> Unit
 ) {
     val droneLatitude by viewModel.latitudeDegDouble.collectAsState()
     val droneLongitude by viewModel.longitudeDegDouble.collectAsState()
@@ -65,6 +67,10 @@ fun ControlScreen(
     val cameraPositionState = rememberCameraPositionState {
         position =
             CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 18f)
+    }
+
+    LaunchedEffect(Unit) {
+        setFabOnClick { viewModel.listenForCommand() }
     }
 
     if (networkConnected) {

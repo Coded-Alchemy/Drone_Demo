@@ -67,6 +67,9 @@ fun DroneDemoApp(modifier: Modifier = Modifier) {
         val snackBarHostState = remember { SnackbarHostState() }
         val snackBarChannel = remember { Channel<String>(Channel.Factory.CONFLATED) }
 
+        val (onFabClick, setOnFabClick) = remember { mutableStateOf<(() -> Unit)?>(null) }
+
+
         // This is for passing messages to the snackBar
         LaunchedEffect(snackBarChannel) {
             snackBarChannel.receiveAsFlow().collect { message ->
@@ -108,7 +111,8 @@ fun DroneDemoApp(modifier: Modifier = Modifier) {
         }
 
 
-        Scaffold(modifier = modifier.fillMaxSize(),
+        Scaffold(
+            modifier = modifier.fillMaxSize(),
             containerColor = MaterialTheme.colorScheme.background,
             topBar = { DroneDemoAppbar(modifier = modifier, appBarVisible = visibleAppbar) },
             bottomBar = {
@@ -130,14 +134,16 @@ fun DroneDemoApp(modifier: Modifier = Modifier) {
                 DroneDemoFab(
                     channel = snackBarChannel,
                     modifier = modifier,
-                    isVisible = visibleFab
+                    isVisible = visibleFab,
+                    onFabClick = onFabClick
                 )
-            }
+            },
         ) { innerPadding ->
             DroneDemoNavHost(
                 modifier = modifier.padding(innerPadding),
                 navController = navController,
-                snackBarMessageChannel = snackBarChannel
+                snackBarMessageChannel = snackBarChannel,
+                setFabOnClick = setOnFabClick
             )
         }
     }
@@ -211,7 +217,12 @@ fun DroneDemoSnackbarHost(modifier: Modifier = Modifier, snackbarHostState: Snac
 }
 
 @Composable
-fun DroneDemoFab(modifier: Modifier = Modifier, channel: Channel<String>, isVisible: Boolean) {
+fun DroneDemoFab(
+    modifier: Modifier = Modifier,
+    channel: Channel<String>,
+    isVisible: Boolean,
+    onFabClick: (() -> Unit)?
+) {
     AnimatedVisibility(
         visible = isVisible,
         enter = slideInHorizontally(initialOffsetX = { -it }),
@@ -219,7 +230,7 @@ fun DroneDemoFab(modifier: Modifier = Modifier, channel: Channel<String>, isVisi
     ) {
         ExtendedFloatingActionButton(
             onClick = {
-                // TODO: start listing for voice commands
+                onFabClick?.invoke()
             },
             content = {
                 Text(
