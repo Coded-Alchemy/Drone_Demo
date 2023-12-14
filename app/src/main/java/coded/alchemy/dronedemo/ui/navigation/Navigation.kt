@@ -13,22 +13,23 @@ import androidx.navigation.compose.rememberNavController
 import coded.alchemy.dronedemo.R
 import coded.alchemy.dronedemo.ui.connection.ConnectionScreen
 import coded.alchemy.dronedemo.ui.control.ControlScreen
+import coded.alchemy.dronedemo.ui.log.LogScreen
+import coded.alchemy.dronedemo.ui.mission.MissionScreen
 import kotlinx.coroutines.channels.Channel
 
 /**
  * Navigation.kt
  *
  * This file is concerned with application navigation from screen to screen.
- * @author Taji Abdullah
- * */
-
-/**
  * This [Composable] function provides a [NavHostController], sets the first screen upon
  * application entry, and is responsible for navigation.
  *
  * @param modifier
  * @param navController
  * @param startDestination
+ * @param snackBarMessageChannel
+ * @param setFabOnClick
+ * @author Taji Abdullah
  * */
 @Composable
 fun DroneDemoNavHost(
@@ -71,8 +72,12 @@ fun DroneDemoNavHost(
                     towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
                     animationSpec = tween(tweenTime)
                 )
-            }) {
-            ConnectionScreen(navController = navController, snackBarMessageChannel = snackBarMessageChannel)
+            }
+        ) {
+            ConnectionScreen(
+                navController = navController,
+                snackBarMessageChannel = snackBarMessageChannel
+            )
         }
         composable(
             route = Screen.ControlScreen.route,
@@ -99,8 +104,71 @@ fun DroneDemoNavHost(
                     towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
                     animationSpec = tween(tweenTime)
                 )
-            }) {
-            ControlScreen(modifier = modifier, snackBarMessageChannel = snackBarMessageChannel, setFabOnClick = setFabOnClick)
+            }
+        ) {
+            ControlScreen(
+                modifier = modifier,
+                snackBarMessageChannel = snackBarMessageChannel,
+                setFabOnClick = setFabOnClick
+            )
+        }
+        composable(
+            route = Screen.MissionScreen.route,
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                    animationSpec = tween(tweenTime)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                    animationSpec = tween(tweenTime)
+                )
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                    animationSpec = tween(tweenTime)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                    animationSpec = tween(tweenTime)
+                )
+            }
+        ) {
+            MissionScreen()
+        }
+        composable(
+            route = Screen.LogScreen.route,
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                    animationSpec = tween(tweenTime)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                    animationSpec = tween(tweenTime)
+                )
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                    animationSpec = tween(tweenTime)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                    animationSpec = tween(tweenTime)
+                )
+            }
+        ) {
+            LogScreen()
         }
     }
 }

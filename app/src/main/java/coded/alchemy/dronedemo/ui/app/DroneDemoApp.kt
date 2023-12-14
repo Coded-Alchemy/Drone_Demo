@@ -100,7 +100,7 @@ fun DroneDemoApp(modifier: Modifier = Modifier) {
             Screen.MissionScreen.route -> {
                 visibleAppbar = true
                 visibleNavbar = true
-                visibleFab = false
+                visibleFab = true
             }
 
             Screen.LogScreen.route -> {
@@ -226,7 +226,7 @@ fun DroneDemoFab(
     AnimatedVisibility(
         visible = isVisible,
         enter = slideInHorizontally(initialOffsetX = { -it }),
-        exit = slideOutVertically(targetOffsetY = { -it })
+        exit = slideOutVertically(targetOffsetY = { +it })
     ) {
         ExtendedFloatingActionButton(
             onClick = {

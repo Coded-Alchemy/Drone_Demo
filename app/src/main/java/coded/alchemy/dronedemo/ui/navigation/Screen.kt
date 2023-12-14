@@ -6,8 +6,8 @@ import coded.alchemy.dronedemo.R
 sealed class Screen(val route: String, @StringRes val caption: Int) {
     data object ConnectionScreen : Screen(route = Route.CONNECTION_SCREEN, caption = 0)
     data object ControlScreen : Screen(route = Route.CONTROL_SCREEN, R.string.screen_control)
-    data object MissionScreen : Screen(route = Route.CONTROL_SCREEN, R.string.screen_mission)
-    data object LogScreen : Screen(route = Route.CONTROL_SCREEN, R.string.screen_logs)
+    data object MissionScreen : Screen(route = Route.MISSION_SCREEN, R.string.screen_mission)
+    data object LogScreen : Screen(route = Route.LOG_SCREEN, R.string.screen_logs)
 }
 
 /**
