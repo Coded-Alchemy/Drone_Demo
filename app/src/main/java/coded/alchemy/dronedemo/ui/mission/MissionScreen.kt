@@ -1,6 +1,7 @@
 package coded.alchemy.dronedemo.ui.mission
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 /**
  * MissionScreen.kt
@@ -10,6 +11,6 @@ import androidx.compose.runtime.Composable
  * @author Taji Abdullah
  * */
 @Composable
-fun MissionScreen() {
+fun MissionScreen(modifier: Modifier = Modifier) {
 
 }
