@@ -16,6 +16,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -52,7 +53,8 @@ import org.koin.androidx.compose.koinViewModel
 fun ControlScreen(
     modifier: Modifier = Modifier,
     viewModel: ControlScreenViewModel = koinViewModel(),
-    snackBarMessageChannel: Channel<String>
+    snackBarMessageChannel: Channel<String>,
+    setFabOnClick: (() -> Unit) -> Unit
 ) {
     val droneLatitude by viewModel.latitudeDegDouble.collectAsState()
     val droneLongitude by viewModel.longitudeDegDouble.collectAsState()
@@ -60,24 +62,30 @@ fun ControlScreen(
     val satelliteCountState by viewModel.satelliteCount.collectAsState()
     val batteryPercentage by viewModel.batteryRemaining.collectAsState()
     val droneSpeed by viewModel.speed.collectAsState()
-    val isNetworkConnected by viewModel.isNetworkConnected.collectAsState()
+    val networkConnected by viewModel.isNetworkConnected.collectAsState()
     val dronePosition = LatLng(droneLatitude, droneLongitude)
     val cameraPositionState = rememberCameraPositionState {
         position =
             CameraPosition.fromLatLngZoom(LatLng(droneLatitude, droneLongitude), 18f)
     }
 
-    if (isNetworkConnected) {
-        ConstraintLayout(modifier = modifier.fillMaxHeight()) {
+    LaunchedEffect(Unit) {
+        setFabOnClick { viewModel.listenForCommand() }
+    }
+
+    if (networkConnected) {
+        ConstraintLayout(modifier = modifier.fillMaxHeight()
+            .padding(all = dimensionResource(id = R.dimen.dp_6))) {
             val (mapCard, telemetryCard, buttonCard, vocalCard) = createRefs()
 
             Card(
                 modifier =
-                modifier
+                Modifier
                     .padding(all = dimensionResource(id = R.dimen.default_padding))
                     .height(intrinsicSize = IntrinsicSize.Max)
+                    .heightIn(min = 160.dp)
                     .constrainAs(mapCard) {
-                        top.linkTo(parent.top, margin = 0.dp)
+                        top.linkTo(parent.top, margin = (-80).dp)
                         bottom.linkTo(telemetryCard.top, margin = 8.dp)
                     },
                 elevation = CardDefaults.cardElevation(
@@ -85,7 +93,7 @@ fun ControlScreen(
                 )
             ) {
                 GoogleMap(
-                    modifier = modifier.heightIn(min = 250.dp),
+//                    modifier = modifier.heightIn(min = 500.dp),
                     cameraPositionState = cameraPositionState
                 ) {
                     Marker(
@@ -98,44 +106,45 @@ fun ControlScreen(
 
             Card(
                 modifier =
-                modifier
+                Modifier
                     .padding(all = dimensionResource(id = R.dimen.default_padding))
                     .fillMaxWidth()
+                    .height(intrinsicSize = IntrinsicSize.Max)
                     .constrainAs(telemetryCard) {
-                        top.linkTo(mapCard.bottom)
-                        bottom.linkTo(buttonCard.top, margin = 8.dp)
+                        top.linkTo(mapCard.bottom, margin = (-0).dp)
+//                        bottom.linkTo(buttonCard.top, margin = 8.dp)
                     },
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = dimensionResource(id = R.dimen.card_elevation)
                 )
             ) {
                 Row(
-                    modifier = modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(
-                        modifier = modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
                     ) {
                         Text(text = "Altitude")
                         Text("${relativeAltitudeFloatState.formatToTenths()} m")
                     }
 
                     Column(
-                        modifier = modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
                     ) {
                         Text(text = "Speed")
                         Text(droneSpeed.calculateMphFromVelocity().formatToTenths().appendMph())
                     }
 
                     Column(
-                        modifier = modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
                     ) {
                         Text(text = "GPS")
                         Text(satelliteCountState.toString())
                     }
 
                     Column(
-                        modifier = modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.card_column_padding))
                     ) {
                         Text(text = "Battery")
                         Text(batteryPercentage.formatToTenthsAndHundredths().appendPercentSign())
@@ -145,24 +154,24 @@ fun ControlScreen(
 
             Card(
                 modifier =
-                modifier
+                Modifier
                     .padding(all = dimensionResource(id = R.dimen.default_padding))
                     .fillMaxWidth()
                     .constrainAs(buttonCard) {
                         top.linkTo(telemetryCard.bottom)
-                        bottom.linkTo(vocalCard.top, margin = 8.dp)
+                        bottom.linkTo(vocalCard.top, margin = 4.dp)
                     },
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = dimensionResource(id = R.dimen.card_elevation)
                 )
             ) {
                 Column(
-                    modifier = modifier.padding(vertical = dimensionResource(id = R.dimen.default_padding)),
+                    modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.default_padding)),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     TakeOffLandButtons(modifier = modifier, viewModel = viewModel)
                     Row(
-                        modifier = modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         ElevationButtons(modifier = modifier, viewModel = viewModel)
@@ -171,29 +180,29 @@ fun ControlScreen(
                 }
             }
 
-            Card(
-                modifier = modifier
-                    .padding(all = dimensionResource(id = R.dimen.default_padding))
-                    .fillMaxWidth()
-                    .constrainAs(vocalCard) {
-                        top.linkTo(buttonCard.bottom)
-                        bottom.linkTo(parent.bottom, margin = 16.dp)
-                    },
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = dimensionResource(id = R.dimen.card_elevation)
-                )
-            ) {
-                Column(
-//                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    ElevatedButton(onClick = {
-                        viewModel.listenForCommand()
-                    }) {
-                        Text(stringResource(id = R.string.btn_voice_command))
-                    }
-                }
-            }
+//            Card(
+//                modifier = modifier
+//                    .padding(all = dimensionResource(id = R.dimen.default_padding))
+//                    .fillMaxWidth()
+//                    .constrainAs(vocalCard) {
+//                        top.linkTo(buttonCard.bottom)
+//                        bottom.linkTo(parent.bottom, margin = 16.dp)
+//                    },
+//                elevation = CardDefaults.cardElevation(
+//                    defaultElevation = dimensionResource(id = R.dimen.card_elevation)
+//                )
+//            ) {
+//                Column(
+////                    verticalArrangement = Arrangement.Center,
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//                    ElevatedButton(onClick = {
+//                        viewModel.listenForCommand()
+//                    }) {
+//                        Text(stringResource(id = R.string.btn_voice_command))
+//                    }
+//                }
+//            }
 
         }
     } else {
