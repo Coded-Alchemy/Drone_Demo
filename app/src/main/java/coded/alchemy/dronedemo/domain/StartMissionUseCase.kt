@@ -2,7 +2,9 @@ package coded.alchemy.dronedemo.domain
 
 import android.util.Log
 import coded.alchemy.dronedemo.data.DroneRepository
+import io.mavsdk.action_server.ActionServer
 import io.mavsdk.mission.Mission
+import io.mavsdk.telemetry.TelemetryProto.FlightMode
 import kotlinx.coroutines.launch
 
 /**
@@ -44,6 +46,7 @@ class StartMissionUseCase(
 
 
     operator fun invoke() {
+        Log.d(TAG, "invoke: ")
         missionItemList.add(missionItem)
         var missionPlan = Mission.MissionPlan(missionItemList)
 
@@ -56,7 +59,7 @@ class StartMissionUseCase(
                         Log.e(TAG, "Error in mission upload subscription $throwable", throwable)
                     })
                 .andThen(
-                    drone.action.arm()
+                    drone.action.arm().andThen(drone.action.takeoff())
                         .onErrorComplete()
                 )
                 .andThen(drone.mission.startMission()
@@ -67,8 +70,20 @@ class StartMissionUseCase(
                 .subscribe(
                     {}
                 ) { throwable: Throwable? ->
-                    Log.e(TAG, "Error mission subscription $throwable", throwable)
+//                    Log.e(TAG, "Error mission subscription $throwable", throwable)
                 }
         }
+    }
+
+    private suspend fun setFlightModeOnServer() {
+        // Set the desired flight mode (replace Action.FlightMode.MISSION with the desired flight mode)
+//        drone.actionServer.setAllowableFlightModes(ActionServer.AllowableFlightModes(true))
+
+
+//        drone.mission.
+
+
+//        (ActionServer.FlightMode.MISSION)
+
     }
 }

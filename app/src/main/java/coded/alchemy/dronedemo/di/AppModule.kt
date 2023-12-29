@@ -15,9 +15,11 @@ import coded.alchemy.dronedemo.domain.GetFlightModeUseCase
 import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
 import coded.alchemy.dronedemo.domain.GetPositionDataUseCase
 import coded.alchemy.dronedemo.domain.MoveDroneUseCase
+import coded.alchemy.dronedemo.domain.StartMissionUseCase
 import coded.alchemy.dronedemo.ui.connection.ConnectionScreenViewModel
 import coded.alchemy.dronedemo.ui.control.ControlScreenViewModel
 import coded.alchemy.dronedemo.ui.log.LogScreenViewModel
+import coded.alchemy.dronedemo.ui.mission.MissionScreenViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -31,6 +33,7 @@ val appModule = module {
     viewModelOf(::ConnectionScreenViewModel)
     viewModelOf(::ControlScreenViewModel)
     viewModelOf(::LogScreenViewModel)
+    viewModelOf(::MissionScreenViewModel)
     single { DroneRepository() }
     single { ServerRepository() }
     single { SpeechRecognizer }
@@ -46,4 +49,5 @@ val appModule = module {
     single { DroneLandUseCase(droneRepository = get()) }
     single { DroneTakeOffUseCase(droneRepository = get()) }
     single { GetFlightLogsUseCase(droneRepository = get()) }
+    single { StartMissionUseCase(droneRepository = get(), getPositionDataUseCase = get()) }
 }
