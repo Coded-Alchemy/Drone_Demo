@@ -53,6 +53,13 @@ android {
 
 dependencies {
 
+    implementation(project(":data"))
+    implementation(project(":domain"))
+    implementation(project(":vosk"))
+
+    implementation("com.alphacephei:vosk-android:0.3.47@aar")
+
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -64,8 +71,8 @@ dependencies {
     implementation("io.mavsdk:mavsdk:1.3.1")
     implementation("io.mavsdk:mavsdk-server:1.3.2")
     implementation("org.slf4j:slf4j-api:2.0.0")
-    implementation("io.insert-koin:koin-android:3.5.0")
-    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
+    implementation(Dependency.KOIN)
+    implementation(Dependency.KOIN_COMPOSE)
     implementation("androidx.navigation:navigation-compose:2.7.6")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.6")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")

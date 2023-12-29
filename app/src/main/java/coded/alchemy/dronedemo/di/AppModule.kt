@@ -1,8 +1,6 @@
 package coded.alchemy.dronedemo.di
 
-import coded.alchemy.dronedemo.data.DroneRepository
-import coded.alchemy.dronedemo.data.ServerRepository
-import coded.alchemy.dronedemo.data.SpeechRecognizer
+
 import coded.alchemy.dronedemo.domain.ConnectToDroneUseCase
 import coded.alchemy.dronedemo.domain.DroneLandUseCase
 import coded.alchemy.dronedemo.domain.DroneOrbitUseCase
@@ -31,19 +29,4 @@ val appModule = module {
     viewModelOf(::ConnectionScreenViewModel)
     viewModelOf(::ControlScreenViewModel)
     viewModelOf(::LogScreenViewModel)
-    single { DroneRepository() }
-    single { ServerRepository() }
-    single { SpeechRecognizer }
-    single { ConnectToDroneUseCase(serverRepository = get(), droneRepository = get()) }
-    single { GetBatteryPercentageUseCase(droneRepository = get()) }
-    single { GetDroneSpeedUseCase(droneRepository = get()) }
-    single { GetGpsDataUseCase(droneRepository = get()) }
-    single { GetArmedValueUseCase(droneRepository = get()) }
-    single { GetFlightModeUseCase(droneRepository = get()) }
-    single { GetPositionDataUseCase(droneRepository = get()) }
-    single { MoveDroneUseCase(droneRepository = get()) }
-    single { DroneOrbitUseCase(droneRepository = get()) }
-    single { DroneLandUseCase(droneRepository = get()) }
-    single { DroneTakeOffUseCase(droneRepository = get()) }
-    single { GetFlightLogsUseCase(droneRepository = get()) }
 }
