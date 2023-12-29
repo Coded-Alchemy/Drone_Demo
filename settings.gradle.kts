@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "Drone Demo"
 include(":app")
 include(":vosk")
+include(":domain")
