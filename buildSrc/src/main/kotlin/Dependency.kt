@@ -15,8 +15,6 @@ object Dependency {
         const val COMPOSE_MATERIAL = "material3"
         const val NAVIGATION = "2.7.5"
         const val NAVIGATION_RUNTIME = "2.7.5"
-        const val RETROFIT = "2.9.0"
-        const val LOG_INTERCEPTOR = "4.10.0"
         const val ROOM = "2.5.2"
         const val PAGING = "3.2.1"
         const val PAGING_COMPOSE = "3.3.0-alpha02"
@@ -44,6 +42,10 @@ object Dependency {
     // Koin
     const val KOIN = "io.insert-koin:koin-android:${Version.KOIN}"
     const val KOIN_COMPOSE = "io.insert-koin:koin-androidx-compose:${Version.KOIN}"
+
+    // Mav SDK
+    const val MAV_SDK = "io.mavsdk:mavsdk:1.3.1"
+    const val MAV_SERVER = "io.mavsdk:mavsdk-server:1.3.2"
 
     // Room
     const val ROOM_RUNTIME = "androidx.room:room-runtime:${Version.ROOM}"
