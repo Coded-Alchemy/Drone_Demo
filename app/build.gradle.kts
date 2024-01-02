@@ -5,18 +5,18 @@ plugins {
 }
 
 android {
-    namespace = Config.nameSpace
-    compileSdk = Config.compileSdk
+    namespace = "coded.alchemy.dronedemo"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId = Config.nameSpace
-        minSdk = Config.minSdk
+        applicationId = "coded.alchemy.dronedemo"
+        minSdk = 24
         targetSdk = 33
-        versionCode = Config.versionCode
-        versionName = Config.versionName
+        versionCode = 1
+        versionName = "1.0"
         multiDexEnabled = true
 
-        testInstrumentationRunner = Config.testInstrumentationRunner
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -26,8 +26,8 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile(Config.proGuardFile),
-                Config.proGuardRules
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
@@ -36,17 +36,17 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = Config.jvmTarget
+        jvmTarget = "1.8"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Config.kotlinCompilerExtensionVersion
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
-            excludes += Config.excludes
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 }
@@ -71,10 +71,10 @@ dependencies {
     implementation("io.mavsdk:mavsdk:1.3.1")
     implementation("io.mavsdk:mavsdk-server:1.3.2")
     implementation("org.slf4j:slf4j-api:2.0.0")
-    implementation(Dependency.KOIN)
-    implementation(Dependency.KOIN_COMPOSE)
-    implementation("androidx.navigation:navigation-compose:2.7.6")
-    implementation("androidx.navigation:navigation-runtime-ktx:2.7.6")
+    implementation("io.insert-koin:koin-android:3.5.0")
+    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
+    implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("androidx.navigation:navigation-runtime-ktx:2.7.5")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
     implementation("com.google.maps.android:maps-compose:4.1.1")
