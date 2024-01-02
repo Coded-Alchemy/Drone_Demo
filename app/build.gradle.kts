@@ -5,18 +5,18 @@ plugins {
 }
 
 android {
-    namespace = "coded.alchemy.dronedemo"
-    compileSdk = 34
+    namespace = Config.nameSpace
+    compileSdk = Config.compileSdk
 
     defaultConfig {
-        applicationId = "coded.alchemy.dronedemo"
-        minSdk = 24
+        applicationId = Config.nameSpace
+        minSdk = Config.minSdk
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = Config.versionCode
+        versionName = Config.versionName
         multiDexEnabled = true
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = Config.testInstrumentationRunner
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -26,8 +26,8 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile(Config.proGuardFile),
+                Config.proGuardRules
             )
         }
     }
@@ -36,17 +36,17 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = Config.jvmTarget
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = Config.kotlinCompilerExtensionVersion
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += Config.excludes
         }
     }
 }
