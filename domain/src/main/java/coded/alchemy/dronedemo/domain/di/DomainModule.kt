@@ -1,0 +1,36 @@
+package coded.alchemy.dronedemo.domain.di
+
+import coded.alchemy.dronedemo.domain.ConnectToDroneUseCase
+import coded.alchemy.dronedemo.domain.DroneLandUseCase
+import coded.alchemy.dronedemo.domain.DroneOrbitUseCase
+import coded.alchemy.dronedemo.domain.DroneTakeOffUseCase
+import coded.alchemy.dronedemo.domain.GetArmedValueUseCase
+import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
+import coded.alchemy.dronedemo.domain.GetDroneSpeedUseCase
+import coded.alchemy.dronedemo.domain.GetFlightLogsUseCase
+import coded.alchemy.dronedemo.domain.GetFlightModeUseCase
+import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
+import coded.alchemy.dronedemo.domain.GetPositionDataUseCase
+import coded.alchemy.dronedemo.domain.MoveDroneUseCase
+import org.koin.dsl.module
+
+/**
+ * DomainModule.kt
+ *
+ * This file provides the Koin dependency injection module for the domain module.
+ * @author Taji Abdullah
+ * */
+val domainModule = module {
+    single { ConnectToDroneUseCase(serverRepository = get(), droneRepository = get()) }
+    single { GetBatteryPercentageUseCase(droneRepository = get()) }
+    single { GetDroneSpeedUseCase(droneRepository = get()) }
+    single { GetGpsDataUseCase(droneRepository = get()) }
+    single { GetArmedValueUseCase(droneRepository = get()) }
+    single { GetFlightModeUseCase(droneRepository = get()) }
+    single { GetPositionDataUseCase(droneRepository = get()) }
+    single { MoveDroneUseCase(droneRepository = get()) }
+    single { DroneOrbitUseCase(droneRepository = get()) }
+    single { DroneLandUseCase(droneRepository = get()) }
+    single { DroneTakeOffUseCase(droneRepository = get()) }
+    single { GetFlightLogsUseCase(droneRepository = get()) }
+}

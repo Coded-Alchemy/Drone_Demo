@@ -37,7 +37,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coded.alchemy.dronedemo.R
+import coded.alchemy.dronedemo.data.di.dataModule
 import coded.alchemy.dronedemo.di.appModule
+import coded.alchemy.dronedemo.domain.di.domainModule
 import coded.alchemy.dronedemo.ui.navigation.DroneDemoNavHost
 import coded.alchemy.dronedemo.ui.navigation.Screen
 import coded.alchemy.dronedemo.ui.navigation.navbarAccessibleScreens
@@ -55,7 +57,7 @@ import org.koin.compose.KoinApplication
 @Composable
 fun DroneDemoApp(modifier: Modifier = Modifier) {
     KoinApplication(application = {
-        modules(appModule)
+        modules(appModule, dataModule, domainModule)
     }) {
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()

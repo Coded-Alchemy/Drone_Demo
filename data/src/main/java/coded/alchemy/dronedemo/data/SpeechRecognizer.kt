@@ -2,7 +2,7 @@ package coded.alchemy.dronedemo.data
 
 import android.content.Context
 import android.util.Log
-import coded.alchemy.dronedemo.util.extractTextValue
+import coded.alchemy.dronedemo.data.util.extractTextValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
