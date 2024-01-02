@@ -2,10 +2,10 @@ package coded.alchemy.dronedemo.domain
 
 import android.util.Log
 import coded.alchemy.dronedemo.data.DroneRepository
-import io.mavsdk.action_server.ActionServer
 import io.mavsdk.mission.Mission
-import io.mavsdk.telemetry.TelemetryProto.FlightMode
+import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.launch
+
 
 /**
  * StartMissionUseCase.kt
@@ -25,29 +25,12 @@ class StartMissionUseCase(
     // lat long list
     private var missionItemList: MutableList<Mission.MissionItem> = mutableListOf()
 
-    private val speedMs = 400f
-    private val heightM = 60f
-
-    private var missionItem = Mission.MissionItem(
-        getPositionDataUseCase.latitudeDegDouble.value,
-        getPositionDataUseCase.latitudeDegDouble.value,
-        speedMs,
-        heightM,
-        true,
-        Float.NaN,
-        Float.NaN,
-        Mission.MissionItem.CameraAction.NONE,
-        Float.NaN,
-        1.0,
-        Float.NaN,
-        Float.NaN,
-        Float.NaN
-    )
-
-
     operator fun invoke() {
         Log.d(TAG, "invoke: ")
-        missionItemList.add(missionItem)
+        missionItemList.add(generateMissionItem(47.39803986, 8.54557254))
+        missionItemList.add(generateMissionItem(47.39853996, 8.54567354))
+        missionItemList.add(generateMissionItem(47.39884006, 8.54607554))
+
         var missionPlan = Mission.MissionPlan(missionItemList)
 
         scope.launch {
@@ -58,14 +41,22 @@ class StartMissionUseCase(
                     .doOnError { throwable: Throwable? ->
                         Log.e(TAG, "Error in mission upload subscription $throwable", throwable)
                     })
-                .andThen(
-                    drone.action.arm().andThen(drone.action.takeoff())
-                        .onErrorComplete()
-                )
+                .andThen(drone.mission.downloadMission()
+                    .doOnSubscribe { disposable: Disposable? ->
+                        Log.d(TAG, "Downloading mission")
+                    }
+                    .doAfterSuccess { disposable: Mission.MissionPlan? ->
+                        Log.d(TAG, "Mission downloaded")
+                    }
+                    .doOnError { throwable: Throwable? ->
+                        Log.e(TAG, "Error in mission download subscription $throwable", throwable)
+                    }
+                ).toCompletable()
+                .andThen(drone.action.arm().onErrorComplete())
                 .andThen(drone.mission.startMission()
                     .doOnComplete { Log.d(TAG, "Mission started") }
                     .doOnError { throwable: Throwable? ->
-                        Log.e(TAG, "Error in start mission subscription $throwable", throwable)
+                        Log.e(TAG, "Error in start mission subscription ${throwable?.cause}", throwable)
                     })
                 .subscribe(
                     {}
@@ -75,15 +66,21 @@ class StartMissionUseCase(
         }
     }
 
-    private suspend fun setFlightModeOnServer() {
-        // Set the desired flight mode (replace Action.FlightMode.MISSION with the desired flight mode)
-//        drone.actionServer.setAllowableFlightModes(ActionServer.AllowableFlightModes(true))
-
-
-//        drone.mission.
-
-
-//        (ActionServer.FlightMode.MISSION)
-
+    fun generateMissionItem(latitudeDeg: Double, longitudeDeg: Double): Mission.MissionItem {
+        return Mission.MissionItem(
+            latitudeDeg,
+            longitudeDeg,
+            10f,
+            50f,
+            true,
+            Float.NaN,
+            Float.NaN,
+            Mission.MissionItem.CameraAction.NONE,
+            5F,
+            Double.NaN,
+            Float.NaN,
+            Float.NaN,
+            Float.NaN
+        )
     }
 }
