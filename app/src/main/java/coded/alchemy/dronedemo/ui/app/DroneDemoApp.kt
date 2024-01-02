@@ -131,12 +131,15 @@ fun DroneDemoApp(modifier: Modifier = Modifier) {
                 )
             },
             floatingActionButton = {
-                DroneDemoFab(
-                    channel = snackBarChannel,
-                    modifier = modifier,
-                    isVisible = visibleFab,
-                    onFabClick = onFabClick
-                )
+                navBackStackEntry?.let { backStack ->
+                    DroneDemoFab(
+                        channel = snackBarChannel,
+                        modifier = modifier,
+                        isVisible = visibleFab,
+                        backStackEntry = backStack,
+                        onFabClick = onFabClick
+                    )
+                }
             },
         ) { innerPadding ->
             DroneDemoNavHost(
@@ -221,6 +224,7 @@ fun DroneDemoFab(
     modifier: Modifier = Modifier,
     channel: Channel<String>,
     isVisible: Boolean,
+    backStackEntry: NavBackStackEntry,
     onFabClick: (() -> Unit)?
 ) {
     AnimatedVisibility(
@@ -233,9 +237,10 @@ fun DroneDemoFab(
                 onFabClick?.invoke()
             },
             content = {
-                Text(
-                    stringResource(id = R.string.btn_voice_command),
-                )
+                when (backStackEntry?.destination?.route) {
+                    Screen.ControlScreen.route -> Text(stringResource(id = R.string.btn_voice_command))
+                    Screen.MissionScreen.route -> Text(stringResource(id = R.string.btn_start_mission))
+                }
             }
         )
     }

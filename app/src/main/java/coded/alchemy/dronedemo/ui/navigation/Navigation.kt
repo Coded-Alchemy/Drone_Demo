@@ -139,7 +139,11 @@ fun DroneDemoNavHost(
                 )
             }
         ) {
-            MissionScreen(modifier = modifier)
+            MissionScreen(
+                modifier = modifier,
+                setFabOnClick = setFabOnClick,
+                snackBarMessageChannel = snackBarMessageChannel)
+
         }
         composable(
             route = Screen.LogScreen.route,
