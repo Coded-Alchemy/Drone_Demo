@@ -15,8 +15,7 @@ import kotlinx.coroutines.launch
  * @author Taji Abdullah
  * */
 class StartMissionUseCase(
-    private val droneRepository: DroneRepository,
-    private val getPositionDataUseCase: GetPositionDataUseCase
+    private val droneRepository: DroneRepository
 ) : DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
 

@@ -56,6 +56,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
     implementation(project(":vosk"))
+    implementation(project(":network"))
 
     implementation("com.alphacephei:vosk-android:0.3.47@aar")
 
@@ -73,8 +74,8 @@ dependencies {
     implementation("org.slf4j:slf4j-api:2.0.0")
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-androidx-compose:3.5.0")
-    implementation("androidx.navigation:navigation-compose:2.7.5")
-    implementation("androidx.navigation:navigation-runtime-ktx:2.7.5")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("androidx.navigation:navigation-runtime-ktx:2.7.6")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
     implementation("com.google.maps.android:maps-compose:4.1.1")

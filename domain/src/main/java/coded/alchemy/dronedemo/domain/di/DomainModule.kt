@@ -12,6 +12,7 @@ import coded.alchemy.dronedemo.domain.GetFlightModeUseCase
 import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
 import coded.alchemy.dronedemo.domain.GetPositionDataUseCase
 import coded.alchemy.dronedemo.domain.MoveDroneUseCase
+import coded.alchemy.dronedemo.domain.StartMissionUseCase
 import org.koin.dsl.module
 
 /**
@@ -33,4 +34,5 @@ val domainModule = module {
     single { DroneLandUseCase(droneRepository = get()) }
     single { DroneTakeOffUseCase(droneRepository = get()) }
     single { GetFlightLogsUseCase(droneRepository = get()) }
+    single { StartMissionUseCase(droneRepository = get()) }
 }
