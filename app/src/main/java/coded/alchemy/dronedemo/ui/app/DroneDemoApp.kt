@@ -15,6 +15,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -77,7 +78,8 @@ fun DroneDemoApp(modifier: Modifier = Modifier) {
             snackBarChannel.receiveAsFlow().collect { message ->
                 val result = snackBarHostState.showSnackbar(
                     message = message,
-                    actionLabel = "Action"
+                    actionLabel = "Action",
+                    duration = SnackbarDuration.Short
                 )
                 when (result) {
                     SnackbarResult.ActionPerformed -> {
