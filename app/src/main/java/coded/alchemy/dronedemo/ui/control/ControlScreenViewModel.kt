@@ -3,16 +3,17 @@ package coded.alchemy.dronedemo.ui.control
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import coded.alchemy.dronedemo.data.SpeechRecognizer
-import coded.alchemy.dronedemo.domain.DroneLandUseCase
-import coded.alchemy.dronedemo.domain.DroneOrbitUseCase
-import coded.alchemy.dronedemo.domain.DroneTakeOffUseCase
-import coded.alchemy.dronedemo.domain.GetArmedValueUseCase
-import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
-import coded.alchemy.dronedemo.domain.GetDroneSpeedUseCase
-import coded.alchemy.dronedemo.domain.GetFlightModeUseCase
-import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
-import coded.alchemy.dronedemo.domain.GetPositionDataUseCase
-import coded.alchemy.dronedemo.domain.MoveDroneUseCase
+import coded.alchemy.dronedemo.domain.usecase.DroneLandUseCase
+import coded.alchemy.dronedemo.domain.usecase.DroneOrbitUseCase
+import coded.alchemy.dronedemo.domain.usecase.DroneTakeOffUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetArmedValueUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetBatteryPercentageUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetConnectionStateUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetDroneSpeedUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetFlightModeUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetGpsDataUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetPositionDataUseCase
+import coded.alchemy.dronedemo.domain.usecase.MoveDroneUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import coded.alchemy.dronedemo.util.VoiceCommand
 import io.mavsdk.action.Action
@@ -48,6 +49,7 @@ class ControlScreenViewModel(
     private val getGpsDataUseCase: GetGpsDataUseCase,
     private val getDroneSpeedUseCase: GetDroneSpeedUseCase,
     private val getBatteryPercentageUseCase: GetBatteryPercentageUseCase,
+    private val getConnectionStateUseCase: GetConnectionStateUseCase
 ) : DroneDemoViewModel() {
     private val TAG = this.javaClass.simpleName
     val relativeAltitudeFloat: StateFlow<Float> = getPositionDataUseCase.relativeAltitudeFloat
@@ -73,6 +75,7 @@ class ControlScreenViewModel(
         getGpsDataUseCase()
         getBatteryPercentageUseCase()
         getDroneSpeedUseCase()
+        getConnectionStateUseCase()
 
         viewModelScope.launch {
             vocalCommand.collect { command ->

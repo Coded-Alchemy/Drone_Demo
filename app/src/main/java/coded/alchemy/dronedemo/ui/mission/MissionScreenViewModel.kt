@@ -1,7 +1,7 @@
 package coded.alchemy.dronedemo.ui.mission
 
 import android.util.Log
-import coded.alchemy.dronedemo.domain.StartMissionUseCase
+import coded.alchemy.dronedemo.domain.usecase.StartMissionUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 
 class MissionScreenViewModel(private val startMissionUseCase: StartMissionUseCase): DroneDemoViewModel() {
