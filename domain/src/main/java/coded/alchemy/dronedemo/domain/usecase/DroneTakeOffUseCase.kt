@@ -1,29 +1,29 @@
-package coded.alchemy.dronedemo.domain
+package coded.alchemy.dronedemo.domain.usecase
 
 import android.util.Log
 import coded.alchemy.dronedemo.data.DroneRepository
 import kotlinx.coroutines.launch
 
 /**
- * MoveDroneUseCase.kt
+ * DroneLandUseCase.kt
  *
- * This class is responsible for providing [DroneRepository.drone] directional movement functionality.
+ * This class is responsible for providing the [DroneRepository.drone] Landing functionality.
  * @param droneRepository [DroneRepository] gives access to [DroneRepository.drone].
  * @author Taji Abdullah
  * */
-class MoveDroneUseCase(private val droneRepository: DroneRepository) : DroneDemoUseCase() {
+class DroneTakeOffUseCase(private val droneRepository: DroneRepository) : DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
 
-    operator fun invoke(latitude: Double, longitude: Double, altitude: Float, yawDegree: Float) {
+    operator fun invoke() {
         Log.d(TAG, "invoke: ")
         scope.launch {
-            droneRepository.drone.action.gotoLocation(latitude, longitude, altitude, yawDegree)
+            droneRepository.drone.action.arm().andThen(droneRepository.drone.action.takeoff())
                 .subscribe(
                     {
                         // onNext - handle the result
                     },
                     { error ->
-                        Log.e(TAG, "moveDrone: $error", error)
+                        Log.e(TAG, "takeoff: $error", error)
                     }
                 )
         }

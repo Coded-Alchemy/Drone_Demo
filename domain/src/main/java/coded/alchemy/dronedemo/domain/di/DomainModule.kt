@@ -1,18 +1,19 @@
 package coded.alchemy.dronedemo.domain.di
 
-import coded.alchemy.dronedemo.domain.ConnectToDroneUseCase
-import coded.alchemy.dronedemo.domain.DroneLandUseCase
-import coded.alchemy.dronedemo.domain.DroneOrbitUseCase
-import coded.alchemy.dronedemo.domain.DroneTakeOffUseCase
-import coded.alchemy.dronedemo.domain.GetArmedValueUseCase
-import coded.alchemy.dronedemo.domain.GetBatteryPercentageUseCase
-import coded.alchemy.dronedemo.domain.GetDroneSpeedUseCase
-import coded.alchemy.dronedemo.domain.GetFlightLogsUseCase
-import coded.alchemy.dronedemo.domain.GetFlightModeUseCase
-import coded.alchemy.dronedemo.domain.GetGpsDataUseCase
-import coded.alchemy.dronedemo.domain.GetPositionDataUseCase
-import coded.alchemy.dronedemo.domain.MoveDroneUseCase
-import coded.alchemy.dronedemo.domain.StartMissionUseCase
+import coded.alchemy.dronedemo.domain.usecase.ConnectToDroneUseCase
+import coded.alchemy.dronedemo.domain.usecase.DroneLandUseCase
+import coded.alchemy.dronedemo.domain.usecase.DroneOrbitUseCase
+import coded.alchemy.dronedemo.domain.usecase.DroneTakeOffUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetArmedValueUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetBatteryPercentageUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetConnectionStateUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetDroneSpeedUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetFlightLogsUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetFlightModeUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetGpsDataUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetPositionDataUseCase
+import coded.alchemy.dronedemo.domain.usecase.MoveDroneUseCase
+import coded.alchemy.dronedemo.domain.usecase.StartMissionUseCase
 import org.koin.dsl.module
 
 /**
@@ -22,7 +23,7 @@ import org.koin.dsl.module
  * @author Taji Abdullah
  * */
 val domainModule = module {
-    single { ConnectToDroneUseCase(serverRepository = get(), droneRepository = get()) }
+    single { ConnectToDroneUseCase(serverRepository = get(), droneRepository = get(), getConnectionStateUseCase = get()) }
     single { GetBatteryPercentageUseCase(droneRepository = get()) }
     single { GetDroneSpeedUseCase(droneRepository = get()) }
     single { GetGpsDataUseCase(droneRepository = get()) }
@@ -35,4 +36,5 @@ val domainModule = module {
     single { DroneTakeOffUseCase(droneRepository = get()) }
     single { GetFlightLogsUseCase(droneRepository = get()) }
     single { StartMissionUseCase(droneRepository = get()) }
+    single { GetConnectionStateUseCase(droneRepository = get()) }
 }

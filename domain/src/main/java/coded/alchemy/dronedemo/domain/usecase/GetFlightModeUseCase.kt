@@ -1,4 +1,4 @@
-package coded.alchemy.dronedemo.domain
+package coded.alchemy.dronedemo.domain.usecase
 
 import android.util.Log
 import coded.alchemy.dronedemo.data.DroneRepository

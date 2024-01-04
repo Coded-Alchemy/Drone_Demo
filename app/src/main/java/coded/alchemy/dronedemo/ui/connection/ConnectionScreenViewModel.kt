@@ -1,7 +1,8 @@
 package coded.alchemy.dronedemo.ui.connection
 
 import android.util.Log
-import coded.alchemy.dronedemo.domain.ConnectToDroneUseCase
+import coded.alchemy.dronedemo.domain.usecase.ConnectToDroneUseCase
+import coded.alchemy.dronedemo.domain.usecase.GetConnectionStateUseCase
 import coded.alchemy.dronedemo.ui.app.DroneDemoViewModel
 import kotlinx.coroutines.flow.StateFlow
 

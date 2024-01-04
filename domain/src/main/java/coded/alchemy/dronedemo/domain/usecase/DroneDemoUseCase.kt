@@ -1,4 +1,4 @@
-package coded.alchemy.dronedemo.domain
+package coded.alchemy.dronedemo.domain.usecase
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

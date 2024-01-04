@@ -1,4 +1,4 @@
-package coded.alchemy.dronedemo.domain
+package coded.alchemy.dronedemo.domain.usecase
 
 import android.util.Log
 import coded.alchemy.dronedemo.data.DroneRepository
@@ -18,11 +18,11 @@ import kotlinx.coroutines.launch
  * */
 class ConnectToDroneUseCase(
     private val droneRepository: DroneRepository,
-    private val serverRepository: ServerRepository
+    private val serverRepository: ServerRepository,
+    private val getConnectionStateUseCase: GetConnectionStateUseCase
 ) : DroneDemoUseCase() {
     private val TAG = this.javaClass.simpleName
-    private val _isDroneConnected = MutableStateFlow<Boolean?>(false)
-    val isDroneConnected: StateFlow<Boolean?> get() = _isDroneConnected
+    val isDroneConnected: StateFlow<Boolean?> get() = getConnectionStateUseCase.isDroneConnected
 
     private val _isDroneConnecting = MutableStateFlow(false)
     val isDroneConnecting: StateFlow<Boolean> get() = _isDroneConnecting
@@ -34,10 +34,9 @@ class ConnectToDroneUseCase(
             try {
                 val port = serverRepository.mavServer().run()
                 droneRepository.drone = System(serverRepository.host, port)
-                _isDroneConnected.emit(true)
+                getConnectionStateUseCase()
             } catch (exception: Exception) {
                 Log.e(TAG, exception.toString())
-                _isDroneConnected.emit(false)
                 serverRepository.mavServer().stop()
                 serverRepository.mavServer().destroy()
             }
