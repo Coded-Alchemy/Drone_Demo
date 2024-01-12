@@ -1,7 +1,7 @@
 import java.util.UUID
 
 plugins {
-    id("com.android.library")
+    id(Plugin.ANDROID_LIBRARY)
 }
 
 android {
