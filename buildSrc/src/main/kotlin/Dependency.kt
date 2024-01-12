@@ -11,7 +11,7 @@ object Dependency {
         const val CORE_KTX = "1.12.0"
         const val LIFECYCLE_RUNTIME_KTX = "2.6.2"
         const val SERIALIZATION = "1.3.0"
-        const val COMPOSE_ACTIVITY = "1.7.2"
+        const val COMPOSE_ACTIVITY = "1.8.2"
         const val COMPOSE_BOM = "2023.03.00"
         const val COMPOSE_UI = "ui"
         const val COMPOSE_GRAPHICS = "ui-graphics"
@@ -23,6 +23,8 @@ object Dependency {
         const val PAGING = "3.2.1"
         const val PAGING_COMPOSE = "3.3.0-alpha02"
         const val KOIN = "3.5.0"
+        const val MAV_SDK = "1.3.1"
+        const val MAV_SERVER = "1.3.2"
     }
 
     const val APP_COMPAT = "androidx.appcompat:appcompat:${Version.APP_COMPAT}"
@@ -48,8 +50,8 @@ object Dependency {
     const val KOIN_COMPOSE = "io.insert-koin:koin-androidx-compose:${Version.KOIN}"
 
     // Mav SDK
-    const val MAV_SDK = "io.mavsdk:mavsdk:1.3.1"
-    const val MAV_SERVER = "io.mavsdk:mavsdk-server:1.3.2"
+    const val MAV_SDK = "io.mavsdk:mavsdk:${Version.MAV_SDK}"
+    const val MAV_SERVER = "io.mavsdk:mavsdk-server:${Version.MAV_SERVER}"
 
     // Room
     const val ROOM_RUNTIME = "androidx.room:room-runtime:${Version.ROOM}"
