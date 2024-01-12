@@ -5,18 +5,18 @@ plugins {
 }
 
 android {
-    namespace = "coded.alchemy.dronedemo"
-    compileSdk = 34
+    namespace = Config.NAMESPACE
+    compileSdk = Config.COMPILE_SDK
 
     defaultConfig {
-        applicationId = "coded.alchemy.dronedemo"
-        minSdk = 24
-        targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        applicationId = Config.NAMESPACE
+        minSdk = Config.MIN_SDK
+        targetSdk = Config.TARGET_SDK
+        versionCode = Config.VERSION_CODE
+        versionName = Config.VERSION_NAME
         multiDexEnabled = true
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = Config.TEST_INSTRUMENTATION_RUNNER
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -26,8 +26,8 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile(Config.PROGUARD_FILE),
+                Config.PROGUARD_RULES
             )
         }
     }
@@ -36,17 +36,17 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = Config.JVM_TARGET
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = Config.KOTLIN_COMPILER_EXTENSION_VERSION
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += Config.EXCLUDES
         }
     }
 }
@@ -55,8 +55,8 @@ dependencies {
 
     implementation(project(":data"))
     implementation(project(":domain"))
-    implementation(project(":vosk"))
     implementation(project(":network"))
+    implementation(project(":vosk"))
 
     implementation("com.alphacephei:vosk-android:0.3.47@aar")
 

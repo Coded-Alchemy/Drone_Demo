@@ -1,5 +1,9 @@
 /**
+ * Dependency.kt
+ *
  * Object to store dependencies.
+ *
+ * @author Taji Abdullah
  * */
 object Dependency {
     object Version {

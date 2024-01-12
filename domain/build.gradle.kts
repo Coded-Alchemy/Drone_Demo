@@ -4,22 +4,22 @@ plugins {
 }
 
 android {
-    namespace = "coded.alchemy.dronedemo.domain"
-    compileSdk = 33
+    namespace = "${Config.NAMESPACE}.domain"
+    compileSdk = Config.COMPILE_SDK
 
     defaultConfig {
-        minSdk = 24
+        minSdk = Config.MIN_SDK
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+        testInstrumentationRunner = Config.TEST_INSTRUMENTATION_RUNNER
+        consumerProguardFiles(Config.PROGUARD_CONSUMER)
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile(Config.PROGUARD_FILE),
+                Config.PROGUARD_RULES
             )
         }
     }
@@ -28,7 +28,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = Config.JVM_TARGET
     }
 }
 
